@@ -13,13 +13,13 @@ namespace testOne
     {
         public readonly int Handle;
 
-        public static Texture LoadFromFile(string path)
+        public static Texture LoadFromFile(TextureUnit unit, string path)
         {
             // Generate handle
             int handle = GL.GenTexture();
 
             // Bind the handle
-            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.ActiveTexture(unit);
             GL.BindTexture(TextureTarget.Texture2D, handle);
 
             // For this example, we're going to use .NET's built-in System.Drawing library to load textures.

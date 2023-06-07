@@ -2597,11 +2597,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\wes\\Downloads\\openTK_windowTest-20230603T000554Z-001\\openTK_windowTest\\openTK_windowTest\\openTK_windowTest.csproj",
+      "projectUniqueName": "C:\\Users\\wes\\github-repos\\cameraapp\\openTK_windowTest.csproj",
       "projectName": "openTK_windowTest",
-      "projectPath": "C:\\Users\\wes\\Downloads\\openTK_windowTest-20230603T000554Z-001\\openTK_windowTest\\openTK_windowTest\\openTK_windowTest.csproj",
+      "projectPath": "C:\\Users\\wes\\github-repos\\cameraapp\\openTK_windowTest.csproj",
       "packagesPath": "C:\\Users\\wes\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\wes\\Downloads\\openTK_windowTest-20230603T000554Z-001\\openTK_windowTest\\openTK_windowTest\\obj\\",
+      "outputPath": "C:\\Users\\wes\\github-repos\\cameraapp\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "D:\\Software\\VS\\SDK\\NuGetPackages"

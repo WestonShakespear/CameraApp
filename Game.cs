@@ -194,7 +194,7 @@ namespace testOne {
 
             if (imageCon != null)
             {
-                //texture1 = texture1.LoadFromMemory(TextureUnit.Texture1, imageCon, width, height);
+                texture1 = texture1.LoadFromMemory(TextureUnit.Texture1, imageCon, width, height);
             }
 
             
@@ -215,11 +215,14 @@ namespace testOne {
                 
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBO);
 
+                GL.BindVertexArray(VertexArrayObject);
+
                 texture0.Use(TextureUnit.Texture0);
                 texture1.Use(TextureUnit.Texture1);
                 shader.Use();
 
-                GL.BindVertexArray(VertexArrayObject);
+                //GL.BindVertexArray(VertexArrayObject);
+                
                 GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             }
@@ -301,10 +304,10 @@ namespace testOne {
 
             String imagePath = @"noSignal.jpg";
 
-            texture0 = Texture.LoadFromFile(imagePath);
+            texture0 = Texture.LoadFromFile(TextureUnit.Texture0, imagePath);
             texture0.Use(TextureUnit.Texture0);
 
-            texture1 = Texture.LoadFromFile(imagePath);
+            texture1 = Texture.LoadFromFile(TextureUnit.Texture1, imagePath);
             texture1.Use(TextureUnit.Texture1);
             
             

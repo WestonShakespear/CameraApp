@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "jFh7duyJjBrZyaTj0OcohyPVZbz3/mC9GZaTIyDOuSKy40q5LLcbRm9ihYXEo8yedQ3lW9aWoxsfHNA8nf0wVA==",
+  "dgSpecHash": "XlXYwJpAtApLBuLwvoy5H+6TG5GQsosg6LH1oQVAT+6iesy95qF8Tsv+4rKrRvLeIAM81FO+mnz093Pr4SCZRw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\wes\\Downloads\\openTK_windowTest-20230603T000554Z-001\\openTK_windowTest\\openTK_windowTest\\openTK_windowTest.csproj",
+  "projectFilePath": "C:\\Users\\wes\\github-repos\\cameraapp\\openTK_windowTest.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\wes\\.nuget\\packages\\csfml\\2.5.0\\csfml.2.5.0.nupkg.sha512",
     "C:\\Users\\wes\\.nuget\\packages\\emgu.cv\\4.7.0.5276\\emgu.cv.4.7.0.5276.nupkg.sha512",
