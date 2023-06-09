@@ -262,6 +262,10 @@ namespace testOne
                     continue;
                 }
                 io.KeysDown[(int)key] = KeyboardState.IsKeyDown(key);
+                if (KeyboardState.IsKeyPressed(key)) {
+                    this.PressChar((char)key);
+                }
+                
             }
 
             foreach (var c in PressedChars)
@@ -306,7 +310,9 @@ namespace testOne
             io.KeyMap[(int)ImGuiKey.Enter] = (int)Keys.Enter;
             io.KeyMap[(int)ImGuiKey.Escape] = (int)Keys.Escape;
             io.KeyMap[(int)ImGuiKey.A] = (int)Keys.A;
+            io.KeyMap[(int)ImGuiKey.B] = (int)Keys.B;
             io.KeyMap[(int)ImGuiKey.C] = (int)Keys.C;
+            io.KeyMap[(int)ImGuiKey.D] = (int)Keys.D;
             io.KeyMap[(int)ImGuiKey.V] = (int)Keys.V;
             io.KeyMap[(int)ImGuiKey.X] = (int)Keys.X;
             io.KeyMap[(int)ImGuiKey.Y] = (int)Keys.Y;

@@ -10,7 +10,9 @@ namespace testOne
 {
     public class CameraInput
     {
-        private event EventHandler capture;
+        private event EventHandler? capture;
+        private event EventHandler? init;
+        //private event EventHandler? changeSettings;
 
         private byte[]? currentRawImage;
         private byte[]? currentConImage;
@@ -33,63 +35,72 @@ namespace testOne
         {
             this.camera = new VideoCapture(_cameraIndex);
 
-            
-            this.camera.initCamera(15, 1920, 1200);
-            this.camera.displaySettings();
-            
-            
-
             this.ready = true;
 
-            capture += async (o, e) =>
-            {
-                if (this.camera != null)
-                {
-                    Mat newImage = await Task.Run(() => this.camera.QueryFrame());
-                    Mat conImage = await Task.Run(() => this.convert(newImage));
-                   
+            this.SetupEventHandlers();
+            
 
-                    byte[] image0 = await Task.Run(() => this.convertImage(newImage));
-                    byte[] image1 = await Task.Run(() => this.convertImage(conImage));
-
-                    this.captureComplete(newImage, image0, image1);
-                }
-            };
 
             this.timer = new Stopwatch();
         }
 
-        public void startTimer()
+
+        private void SetupEventHandlers()
         {
-            this.timer.Reset();
-            this.timer.Start();
+            capture += async (o, e) =>
+            {
+                Mat? image = await TaskCapture();
+
+                if (image != null)
+                {
+                    byte[] conImage = await TaskConvert(image);
+
+                    this.captureComplete(image, conImage);
+                }
+                
+            };
+
+            init += async (o, e) =>
+            {
+                if (camera != null)
+                    {
+                    await Task.Run(() => {
+                        
+                        this.camera.initCamera(15, 1920, 1200);
+                    });
+                    this.camera.displaySettings();
+                }
+            };
+
+
         }
 
-        public void stopTimer()
+
+
+
+        private async Task<Mat?> TaskCapture()
         {
-            this.timer.Stop();
-            TimeSpan ts = this.timer.Elapsed;
+            if (this.camera != null)
+            {      
+                return await Task.Run(() => this.camera.QueryFrame());
+            }
 
-            string elapsedTime = String.Format("{0:00}",
-            ts.Milliseconds);
-
-            Console.WriteLine(elapsedTime);
+            return null;
         }
 
-        private byte[] convertImage(Mat image)
+        private async Task<byte[]> TaskConvert(Mat image)
         {
             var buffer = new VectorOfByte();
-            CvInvoke.Imencode(".jpg", image, buffer);
 
-            ImageResult output = ImageResult.FromMemory(buffer.ToArray(), ColorComponents.RedGreenBlueAlpha);
+            await Task.Run(() => CvInvoke.Imencode(".jpg", image, buffer));
 
-            return output.Data;
+            return await Task.Run(() => ImageResult.FromMemory(buffer.ToArray(), ColorComponents.RedGreenBlueAlpha).Data);
         }
 
-        public void captureComplete(Mat imageMat, byte[] image0, byte[] image1)
+        public void captureComplete(Mat imageMat, byte[] image0)
         {
             this.currentRawImage = image0;
-            this.currentConImage = image1;
+            this.currentConImage = image0;
             this.currentMat = imageMat;
             this.ready = true;
         }
@@ -120,6 +131,13 @@ namespace testOne
                 this.ready = false;
                 capture?.Invoke(this, EventArgs.Empty);
             } 
+        }
+
+        public void initCamera(int fps, int width, int height)
+        {
+            this.ready = false;
+            init?.Invoke(this, EventArgs.Empty);
+            this.ready = true;
         }
 
         public void getImage(out byte[]? rawImage, out byte[]? conImage, out int width, out int height)

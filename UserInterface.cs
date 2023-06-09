@@ -146,6 +146,8 @@ namespace testOne
         }
 
 
+        
+        static string currentResolution = "";
 
         public static void demoWindow()
         {
@@ -155,9 +157,45 @@ namespace testOne
 
             ImGui.Separator();
 
-            ImGui.Checkbox("Canny", ref Game.canny);
-            ImGui.SliderInt("A:", ref Game.a, 0, 255);
-            ImGui.SliderInt("B:", ref Game.b, 0, 255);
+            // ImGui.InputText("FPS: ", Game.fps, 100);
+
+            string[] resolutionItems = {"640x480", "1920x1080", "1920x1200"};
+
+            if (ImGui.BeginCombo("Resolution", currentResolution))
+            {
+                
+
+                foreach (string resolution in resolutionItems)
+                {
+                    bool selected = false;
+                    
+                    if (ImGui.Selectable(resolution, selected))
+                    {
+                        currentResolution = resolution;
+                    }
+
+                    if (selected)
+                    {
+                        ImGui.SetItemDefaultFocus();
+                    }
+                }
+
+                ImGui.EndCombo();
+            }
+
+            
+            
+
+            if (ImGui.Button("Configure"))
+            {
+                
+            }
+
+            ImGui.Separator();
+
+            // ImGui.Checkbox("Canny", ref Game.canny);
+            // ImGui.SliderInt("A:", ref Game.a, 0, 255);
+            // ImGui.SliderInt("B:", ref Game.b, 0, 255);
 
 
             // ImGui.SliderFloat("Vert1Z", ref Game.vertices[2], -1.0f, 1.0f);

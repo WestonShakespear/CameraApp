@@ -7,9 +7,9 @@ namespace testOne
     {
          public static void initCamera(this VideoCapture capture, int frame, int width, int height)
         {
-            Console.WriteLine(capture.setTest(CapProp.Fps, frame));
-            Console.WriteLine(capture.setTest(CapProp.FrameWidth, width));
-            Console.WriteLine(capture.setTest(CapProp.FrameHeight, height));
+            capture.setTest(CapProp.Fps, frame);
+            capture.setTest(CapProp.FrameWidth, width);
+            capture.setTest(CapProp.FrameHeight, height);
         }
 
         public static bool setTest(this VideoCapture capture, CapProp prop, double value)
@@ -18,7 +18,7 @@ namespace testOne
 
             double nValue = capture.Get(prop);
 
-            Console.WriteLine("Set: {0} Get: {1}", value, nValue);
+            //Console.WriteLine("Set: {0} Get: {1}", value, nValue);
 
             return (nValue == value);
         }

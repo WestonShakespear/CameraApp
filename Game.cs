@@ -7,9 +7,6 @@ using OpenTK.Mathematics;
 using ImGuiNET;
 using System.Diagnostics;
 
-using Emgu.CV;
-using Emgu.CV.Util;
-
 namespace testOne {
     public class Game : GameWindow {
 
@@ -56,18 +53,17 @@ namespace testOne {
         int elementBufferObject;
         int vertexBufferObject;
 
-        public Texture texture0;
+        public Texture? texture0;
 
-        public Texture texture1;
+        public Texture? texture1;
 
-        private byte[]? currentImage;
 
         public static int a = 0;
         public static int b = 0;
 
         public static bool canny = false;
 
-        public static bool captureLive = false;
+        public static bool captureLive = true;
 
         public int FBO; //RBO;
         public int framebufferTexture;
@@ -77,6 +73,8 @@ namespace testOne {
 
         public static float angle = 0.0f;
         public static System.Numerics.Vector4 colorPicked = new System.Numerics.Vector4(0.0f);
+
+        public static byte[] fps = new byte[100];
 
 
         public Game(int width, int height, string title, string fontPath, float fontSize)
@@ -92,6 +90,7 @@ namespace testOne {
                 Profile = ContextProfile.Core,
                 APIVersion = new Version(3, 3)
             })
+
         {
             // Center the window
             this.CenterWindow();
@@ -108,10 +107,8 @@ namespace testOne {
             log("DEBUG", "message4");
 
             this.test = new CameraInput(1);
-            test.captureImage(a, b);
-
+            this.test.initCamera(60, 1920, 1080);
             
-            //Mat noSignal = CvInvoke.Imread(imagePath, Emgu.CV.CvEnum.ImreadModes.AnyColor);
             
 
             this.timer = new Stopwatch();
@@ -189,12 +186,12 @@ namespace testOne {
 
             if (imageRaw != null)
             {
-                texture0 = texture0.LoadFromMemory(TextureUnit.Texture0, imageRaw, width, height);
+                texture0 = texture0?.LoadFromMemory(TextureUnit.Texture0, imageRaw, width, height);
             }
 
             if (imageCon != null)
             {
-                texture1 = texture1.LoadFromMemory(TextureUnit.Texture1, imageCon, width, height);
+                texture1 = texture1?.LoadFromMemory(TextureUnit.Texture1, imageCon, width, height);
             }
 
             
@@ -208,7 +205,7 @@ namespace testOne {
                 
                 if (captureLive)
                 {
-                    this.capture();
+                   // this.capture();
                 }
                 
                 
@@ -217,8 +214,8 @@ namespace testOne {
 
                 GL.BindVertexArray(VertexArrayObject);
 
-                texture0.Use(TextureUnit.Texture0);
-                texture1.Use(TextureUnit.Texture1);
+                texture0?.Use(TextureUnit.Texture0);
+                texture1?.Use(TextureUnit.Texture1);
                 shader.Use();
 
                 //GL.BindVertexArray(VertexArrayObject);
