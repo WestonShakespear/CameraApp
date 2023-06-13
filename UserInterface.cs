@@ -146,8 +146,34 @@ namespace testOne
         }
 
 
-        
+        static string camIndex = "0";
         static string currentResolution = "";
+        static string currentFPS = "";
+
+        
+
+
+        public static void createBasicDropdown(string name, string[] items, ref string value)
+        {
+            if (ImGui.BeginCombo(name, value))
+            {
+                foreach (string item in items)
+                {
+                    bool selected = false;
+                    
+                    if (ImGui.Selectable(item, selected))
+                    {
+                        value = item;
+                    }
+
+                    if (selected)
+                    {
+                        ImGui.SetItemDefaultFocus();
+                    }
+                }
+                ImGui.EndCombo();
+            }
+        }
 
         public static void demoWindow()
         {
@@ -159,31 +185,14 @@ namespace testOne
 
             // ImGui.InputText("FPS: ", Game.fps, 100);
 
+            string[] camNames = {"video0", "video1", "video2"};
+            createBasicDropdown("Camera:", camNames, ref camIndex);
+
             string[] resolutionItems = {"640x480", "1920x1080", "1920x1200"};
+            createBasicDropdown("Resolution:", resolutionItems, ref currentResolution);
 
-            if (ImGui.BeginCombo("Resolution", currentResolution))
-            {
-                
-
-                foreach (string resolution in resolutionItems)
-                {
-                    bool selected = false;
-                    
-                    if (ImGui.Selectable(resolution, selected))
-                    {
-                        currentResolution = resolution;
-                    }
-
-                    if (selected)
-                    {
-                        ImGui.SetItemDefaultFocus();
-                    }
-                }
-
-                ImGui.EndCombo();
-            }
-
-            
+            string[] fpsItems = {"5", "15", "30", "60"};
+            createBasicDropdown("FPS:", fpsItems, ref currentFPS);
             
 
             if (ImGui.Button("Configure"))

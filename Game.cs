@@ -63,7 +63,7 @@ namespace testOne {
 
         public static bool canny = false;
 
-        public static bool captureLive = true;
+        public static bool captureLive = false;
 
         public int FBO; //RBO;
         public int framebufferTexture;
