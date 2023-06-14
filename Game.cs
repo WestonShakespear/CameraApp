@@ -76,6 +76,8 @@ namespace testOne {
 
         public static byte[] fps = new byte[100];
 
+        public static bool trig = false;
+
 
         public Game(int width, int height, string title, string fontPath, float fontSize)
             : base(GameWindowSettings.Default, new NativeWindowSettings()
@@ -194,7 +196,11 @@ namespace testOne {
                 texture1 = texture1?.LoadFromMemory(TextureUnit.Texture1, imageCon, width, height);
             }
 
-            
+            if (trig)
+            {
+                Console.WriteLine("Triggered");
+                trig = false;
+            }
             
         }
 

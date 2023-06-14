@@ -2591,24 +2591,31 @@
     ]
   },
   "packageFolders": {
-    "/home/westonshakespear/.nuget/packages/": {}
+    "C:\\Users\\wes\\.nuget\\packages\\": {},
+    "D:\\Software\\VS\\SDK\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/westonshakespear/Github/camTest/cameraapp/openTK_windowTest.csproj",
+      "projectUniqueName": "C:\\Users\\wes\\github-repos\\cameraapp2\\cameraapp\\openTK_windowTest.csproj",
       "projectName": "openTK_windowTest",
-      "projectPath": "/home/westonshakespear/Github/camTest/cameraapp/openTK_windowTest.csproj",
-      "packagesPath": "/home/westonshakespear/.nuget/packages/",
-      "outputPath": "/home/westonshakespear/Github/camTest/cameraapp/obj/",
+      "projectPath": "C:\\Users\\wes\\github-repos\\cameraapp2\\cameraapp\\openTK_windowTest.csproj",
+      "packagesPath": "C:\\Users\\wes\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\wes\\github-repos\\cameraapp2\\cameraapp\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "D:\\Software\\VS\\SDK\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "/home/westonshakespear/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\wes\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -2672,7 +2679,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/7.0.203/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.201\\RuntimeIdentifierGraph.json"
       }
     }
   }

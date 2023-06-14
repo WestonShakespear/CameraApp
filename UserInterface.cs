@@ -146,9 +146,9 @@ namespace testOne
         }
 
 
-        static string camIndex = "0";
-        static string currentResolution = "";
-        static string currentFPS = "";
+        public static string camIndex = "0";
+        public static string currentResolution = "";
+        public static string currentFPS = "";
 
         
 
@@ -197,7 +197,7 @@ namespace testOne
 
             if (ImGui.Button("Configure"))
             {
-                
+                Game.trig = true;
             }
 
             ImGui.Separator();

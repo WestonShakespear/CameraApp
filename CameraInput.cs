@@ -31,6 +31,8 @@ namespace testOne
 
         
 
+        
+
         public CameraInput(int _cameraIndex)
         {
             this.camera = new VideoCapture(_cameraIndex);
