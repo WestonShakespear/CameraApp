@@ -5,7 +5,8 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Mathematics;
 
 using ImGuiNET;
-using System.Diagnostics;
+
+
 
 namespace testOne {
     public class Game : GameWindow {
@@ -21,8 +22,6 @@ namespace testOne {
 
         List<string[]> logData = new List<string[]>();
 
-
-        Stopwatch timer;
         Shader? shader;
 
         public static float[] vertices =
@@ -33,15 +32,6 @@ namespace testOne {
             -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, // bottom left
             -1.0f,  1.0f, 0.0f, 0.0f, 1.0f  // top left
         };
-
-        // public static float[] vertices =
-        // {
-        //     //Position          Texture coordinates
-        //     0.0f,  1.0f, 0.0f, 1.0f, 1.0f, // top right
-        //     0.0f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom right
-        //     -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // bottom left
-        //     -1.0f,  1.0f, 0.0f, 0.0f, 1.0f  // top left
-        // };
 
         public static uint[] indices =
         {
@@ -103,18 +93,7 @@ namespace testOne {
 
             UIController = new ImGuiController((int)WindowWidth, (int)WindowHeight, fontPath, fontSize);
 
-            log("DEBUG", "message1");
-            log("DEBUG", "message2");
-            log("DEBUG", "message3");
-            log("DEBUG", "message4");
-
             this.test = new CameraInput(1);
-            this.test.initCamera(60, 1920, 1080);
-            
-            
-
-            this.timer = new Stopwatch();
-            this.timer.Start();
             
         }
 
@@ -145,8 +124,6 @@ namespace testOne {
             this.GenFBO(WindowWidth, WindowHeight);
 
             base.OnLoad();
-
-            
         }
 
         protected override void OnUnload()
@@ -196,26 +173,41 @@ namespace testOne {
                 texture1 = texture1?.LoadFromMemory(TextureUnit.Texture1, imageCon, width, height);
             }
 
+            
+            
+        }
+
+        private void updateGLogic()
+        {
+            if (captureLive)
+            {
+                this.capture();
+            }
+
             if (trig)
             {
-                Console.WriteLine("Triggered");
+                string newCamera = GUI.currentCam;
+
+                string[] resolution = GUI.currentResolution.Split("x");
+                string newWidth = resolution[0];
+                string newHeight = resolution[1];
+       
+                string newFPS = GUI.currentFPS;
+
+
+                Console.WriteLine("Triggered: c:{0} w:{1} h:{2} f:{3}", newCamera, newWidth, newHeight, newFPS);
+
+                this.test.initCamera(Int32.Parse(newFPS), Int32.Parse(newWidth), Int32.Parse(newHeight));
                 trig = false;
             }
-            
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
+            this.updateGLogic();
+
             if (shader != null)
             {
-                
-                if (captureLive)
-                {
-                   // this.capture();
-                }
-                
-                
-                
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBO);
 
                 GL.BindVertexArray(VertexArrayObject);
@@ -223,8 +215,6 @@ namespace testOne {
                 texture0?.Use(TextureUnit.Texture0);
                 texture1?.Use(TextureUnit.Texture1);
                 shader.Use();
-
-                //GL.BindVertexArray(VertexArrayObject);
                 
                 GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
@@ -239,28 +229,11 @@ namespace testOne {
 
             Context.SwapBuffers();  
 
-            base.OnRenderFrame(args);      
-            
-            
+            base.OnRenderFrame(args);
         }
 
 
-        public void startTimer()
-        {
-            this.timer.Reset();
-            this.timer.Start();
-        }
-
-        public void stopTimer()
-        {
-            this.timer.Stop();
-            TimeSpan ts = this.timer.Elapsed;
-
-            string elapsedTime = String.Format("{0:00}",
-            ts.Milliseconds);
-
-            Console.WriteLine(elapsedTime);
-        }
+        
 
 
         

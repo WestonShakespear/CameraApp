@@ -145,10 +145,12 @@ namespace testOne
             ImGui.End();
         }
 
+        public static string[] camNames = {"video0", "video1", "video2"};
+        public static string[] resolutionItems = {"640x480", "960x600", "1280x720", "1920x1200"};
 
-        public static string camIndex = "0";
-        public static string currentResolution = "";
-        public static string currentFPS = "";
+        public static string currentCam = "video0";
+        public static string currentResolution = "640x480";
+        public static string currentFPS = "30";
 
         
 
@@ -175,6 +177,8 @@ namespace testOne
             }
         }
 
+        
+
         public static void demoWindow()
         {
             ImGui.Begin("Demo");
@@ -185,14 +189,22 @@ namespace testOne
 
             // ImGui.InputText("FPS: ", Game.fps, 100);
 
-            string[] camNames = {"video0", "video1", "video2"};
-            createBasicDropdown("Camera:", camNames, ref camIndex);
-
-            string[] resolutionItems = {"640x480", "1920x1080", "1920x1200"};
+            
+            createBasicDropdown("Camera:", camNames, ref currentCam);
             createBasicDropdown("Resolution:", resolutionItems, ref currentResolution);
 
-            string[] fpsItems = {"5", "15", "30", "60"};
-            createBasicDropdown("FPS:", fpsItems, ref currentFPS);
+            Dictionary<string, string[]> fpsItems = new Dictionary<string, string[]>();
+
+            string[] sFPS = {"30", "35", "40", "45", "50", "55", "56", "60"};
+            string[] mFPS = {"60"};
+            string[] lFPS = {"30", "35", "38", "40"};
+
+            fpsItems.Add("640x480", sFPS);
+            fpsItems.Add("960x600", mFPS);
+            fpsItems.Add("1280x720", lFPS);
+            fpsItems.Add("1920x1200", lFPS);
+            
+            createBasicDropdown("FPS:", fpsItems[currentResolution], ref currentFPS);
             
 
             if (ImGui.Button("Configure"))
