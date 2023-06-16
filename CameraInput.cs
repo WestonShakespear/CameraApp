@@ -12,6 +12,8 @@ namespace testOne
     {
         private event EventHandler? capture;
         private event EventHandler? init;
+
+        private event EventHandler? report;
         //private event EventHandler? changeSettings;
 
         private byte[]? currentRawImage;
@@ -29,19 +31,28 @@ namespace testOne
 
         Stopwatch timer;
 
-        
+        private int camFPS = 15;
+        private int camWidth = 1920;
+        private int camHeight = 1080;
 
+        private int camIndex = 0;
+
+        private string[] reportList;
+
+        
+        private VideoCapture.API api = VideoCapture.API.DShow;
         
 
         public CameraInput(int _cameraIndex)
         {
-            this.camera = new VideoCapture(_cameraIndex);
-
+            this.camIndex = _cameraIndex;
+            this.camera = new VideoCapture(this.camIndex, api);
+            this.camera.initCamera(camFPS, camWidth, camHeight);
             this.ready = true;
 
             this.SetupEventHandlers();
             
-
+            this.reportList = new string[3];
 
             this.timer = new Stopwatch();
         }
@@ -66,16 +77,19 @@ namespace testOne
             {
                 if (camera != null)
                     {
-                    await Task.Run(() => {
-                        
-                        this.camera.initCamera(15, 1920, 1200);
+                    await Task.Run(() => {   
+                        this.camera.initCamera(camFPS, camWidth, camHeight);
+                        this.ready = true;
                     });
-                    this.camera.displaySettings();
+                    
                 }
             };
 
+         
+
 
         }
+
 
 
 
@@ -138,8 +152,22 @@ namespace testOne
         public void initCamera(int fps, int width, int height)
         {
             this.ready = false;
+
+            this.camFPS = fps;
+            this.camWidth = width;
+            this.camHeight = height;
             init?.Invoke(this, EventArgs.Empty);
-            this.ready = true;
+        }
+
+        public string[] reportCamera()
+        {
+            if (camera != null)
+            {
+                this.ready = false;
+                this.reportList = this.camera.getSettings().Split("\n\r");
+                this.ready = true;
+            }
+            return reportList;
         }
 
         public void getImage(out byte[]? rawImage, out byte[]? conImage, out int width, out int height)

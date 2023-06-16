@@ -6,8 +6,6 @@ using OpenTK.Mathematics;
 
 using ImGuiNET;
 
-
-
 namespace testOne {
     public class Game : GameWindow {
 
@@ -66,8 +64,8 @@ namespace testOne {
 
         public static byte[] fps = new byte[100];
 
-        public static bool trig = false;
-
+        public static bool trigConfigure = false;
+        public static bool trigReport = false;
 
         public Game(int width, int height, string title, string fontPath, float fontSize)
             : base(GameWindowSettings.Default, new NativeWindowSettings()
@@ -179,12 +177,9 @@ namespace testOne {
 
         private void updateGLogic()
         {
-            if (captureLive)
-            {
-                this.capture();
-            }
+            
 
-            if (trig)
+            if (trigConfigure)
             {
                 string newCamera = GUI.currentCam;
 
@@ -198,7 +193,26 @@ namespace testOne {
                 Console.WriteLine("Triggered: c:{0} w:{1} h:{2} f:{3}", newCamera, newWidth, newHeight, newFPS);
 
                 this.test.initCamera(Int32.Parse(newFPS), Int32.Parse(newWidth), Int32.Parse(newHeight));
-                trig = false;
+                trigConfigure = false;
+
+            } 
+            
+            else if (trigReport)
+            {
+                string[] values = this.test.reportCamera();
+                foreach (string value in values)
+                {
+                    this.log("USER", value);
+                }
+                
+                trigReport = false;
+            }
+            
+            else {
+                if (captureLive)
+                {
+                    this.capture();
+                }
             }
         }
 
@@ -222,7 +236,7 @@ namespace testOne {
 
             UIController.Update(this, (float)args.Time);
             ImGui.DockSpaceOverViewport();
-            GUI.WindowOnOffs();
+            GUI.WindowOnOffs(this.logData);
             GUI.LoadOCCTWindow(ref camWidth, ref camHeight, ref framebufferTexture);
             UIController.Render();
             ImGuiController.CheckGLError("End of frame");

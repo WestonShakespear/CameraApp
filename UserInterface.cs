@@ -21,10 +21,11 @@ namespace testOne
 
         public static float spacing = 2f;
 
-        public static void WindowOnOffs()
+        public static void WindowOnOffs(List<string[]> log)
         {
             LoadMenuBar();
             demoWindow();
+            LogWindow(log);
             //demoValueWindow();
             //ImGui.ShowDemoWindow();
         }
@@ -145,8 +146,20 @@ namespace testOne
             ImGui.End();
         }
 
+        // min s=384x4 fps=5 
+        // max s=1920x1200 fps=15
+
+        // min s=1920x1080 fps=5 
+        // max s=1920x1080 fps=15
+
+        // min s=1280x720 fps=5 
+        // max s=1280x720 fps=40
+
+        // min s=640x480 fps=5 
+        // max s=640x480 fps=60.0002
+
         public static string[] camNames = {"video0", "video1", "video2"};
-        public static string[] resolutionItems = {"640x480", "960x600", "1280x720", "1920x1200"};
+        public static string[] resolutionItems = {"640x480", "1280x720", "1920x1080"};
 
         public static string currentCam = "video0";
         public static string currentResolution = "640x480";
@@ -196,20 +209,26 @@ namespace testOne
             Dictionary<string, string[]> fpsItems = new Dictionary<string, string[]>();
 
             string[] sFPS = {"30", "35", "40", "45", "50", "55", "56", "60"};
-            string[] mFPS = {"60"};
+            string[] mFPS = {"5", "10", "15"};
             string[] lFPS = {"30", "35", "38", "40"};
 
             fpsItems.Add("640x480", sFPS);
-            fpsItems.Add("960x600", mFPS);
+            //fpsItems.Add("960x600", mFPS);
             fpsItems.Add("1280x720", lFPS);
-            fpsItems.Add("1920x1200", lFPS);
+            //fpsItems.Add("1920x1200", mFPS);
+            fpsItems.Add("1920x1080", mFPS);
             
             createBasicDropdown("FPS:", fpsItems[currentResolution], ref currentFPS);
             
 
             if (ImGui.Button("Configure"))
             {
-                Game.trig = true;
+                Game.trigConfigure = true;
+            }
+
+            if (ImGui.Button("Report Config"))
+            {
+                Game.trigReport = true;
             }
 
             ImGui.Separator();
