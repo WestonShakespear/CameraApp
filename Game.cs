@@ -66,6 +66,7 @@ namespace testOne {
 
         public static bool trigConfigure = false;
         public static bool trigReport = false;
+        public static bool trigSettings = false;
 
         public Game(int width, int height, string title, string fontPath, float fontSize)
             : base(GameWindowSettings.Default, new NativeWindowSettings()
@@ -131,6 +132,11 @@ namespace testOne {
                 shader.Dispose();
             }
 
+            if (test != null)
+            {
+                test.destroy();
+            }
+
             base.OnUnload();
         }
 
@@ -181,6 +187,8 @@ namespace testOne {
 
             if (trigConfigure)
             {
+                trigConfigure = false;
+
                 string newCamera = GUI.currentCam;
 
                 string[] resolution = GUI.currentResolution.Split("x");
@@ -192,20 +200,28 @@ namespace testOne {
 
                 Console.WriteLine("Triggered: c:{0} w:{1} h:{2} f:{3}", newCamera, newWidth, newHeight, newFPS);
 
-                this.test.initCamera(Int32.Parse(newFPS), Int32.Parse(newWidth), Int32.Parse(newHeight));
-                trigConfigure = false;
-
+                this.test.initCamera(Int32.Parse(newFPS), Int32.Parse(newWidth), Int32.Parse(newHeight));                
             } 
             
             else if (trigReport)
             {
+                trigReport = false;
+
                 string[] values = this.test.reportCamera();
                 foreach (string value in values)
                 {
                     this.log("USER", value);
                 }
-                
-                trigReport = false;
+            }
+
+            else if (trigSettings)
+            {
+                trigSettings = false;
+
+                if (this.test != null)
+                {
+                    this.test.toggleSettings();
+                }
             }
             
             else {

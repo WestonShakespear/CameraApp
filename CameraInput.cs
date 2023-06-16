@@ -13,7 +13,6 @@ namespace testOne
         private event EventHandler? capture;
         private event EventHandler? init;
 
-        private event EventHandler? report;
         //private event EventHandler? changeSettings;
 
         private byte[]? currentRawImage;
@@ -88,6 +87,22 @@ namespace testOne
          
 
 
+        }
+
+        public void destroy()
+        {
+            if (this.camera != null)
+            {
+                this.camera.Dispose();
+            }
+        }
+
+        public void toggleSettings()
+        {
+            if (this.camera != null)
+            {
+                this.camera.toggleSettings();
+            }
         }
 
 

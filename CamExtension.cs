@@ -28,6 +28,19 @@ namespace testOne
             return (nValue == value);
         }
 
+        public static bool toggleSettings(this VideoCapture capture)
+        {
+            double settingsFlag = capture.Get(CapProp.Settings);
+
+            if (settingsFlag == 0) {
+                settingsFlag = 1;
+            } else {
+                settingsFlag = 0;
+            }
+
+            return capture.setTest(CapProp.Settings, settingsFlag);
+        }
+
         public static string getSettings(this VideoCapture capture)
         {
             string output = "";

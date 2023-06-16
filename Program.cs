@@ -6,7 +6,7 @@ namespace testOne {
             string fontPath = @"C:\Windows\Fonts\calibri.ttf";
             float fontSize = 25f;
 
-            using (Game game = new Game(1280, 720, "Test One Window", fontPath, fontSize))
+            using (Game game = new Game(3840, 2066, "Test One Window", fontPath, fontSize))
             {
                 //Win32.MessageBox(0, "hello", "platform invoke", 0);
                 game.Run();

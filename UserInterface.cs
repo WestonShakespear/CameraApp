@@ -202,6 +202,10 @@ namespace testOne
 
             // ImGui.InputText("FPS: ", Game.fps, 100);
 
+            if (ImGui.Button("Report Config"))
+            {
+                Game.trigReport = true;
+            }
             
             createBasicDropdown("Camera:", camNames, ref currentCam);
             createBasicDropdown("Resolution:", resolutionItems, ref currentResolution);
@@ -226,9 +230,11 @@ namespace testOne
                 Game.trigConfigure = true;
             }
 
-            if (ImGui.Button("Report Config"))
+            ImGui.Separator();
+
+            if (ImGui.Button("Toggle Settings"))
             {
-                Game.trigReport = true;
+                Game.trigSettings = true;
             }
 
             ImGui.Separator();
