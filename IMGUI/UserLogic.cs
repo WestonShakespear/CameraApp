@@ -22,20 +22,26 @@ namespace shakespear.cameraapp.gui
         public static string[] camNames = {"video0", "video1", "video2"};
         public static string[] resolutionItems = {"640x480", "1280x720", "1920x1080"};
 
-        public static string CurrentCam = "video0";
-        public static string CurrentResolution = "640x480";
-        public static string CurrentFPS = "30";
+        public static string[] CurrentCam = {"video0", "video0", "video0"};
+        public static string[] CurrentResolution = {"640x480", "640x480", "640x480"};
+        public static string[] CurrentFPS = {"30", "30", "30"};
 
 
-        public static bool captureLive = false;
-        public static bool trigConfigure = false;
-        public static bool trigReport = false;
-        public static bool trigSettings = false;
+        public static bool[] CaptureLive = {false, false, false};
+        public static bool[] TrigConfigure = {false, false, false};
+        public static bool[] TrigReport = {false, false, false};
+        public static bool[] TrigSettings = {false, false, false};
 
         public static CameraInput? CameraOne;
+        public static CameraInput? CameraTwo;
+
         public static byte[]? CameraOneImage;
+        public static byte[]? CameraTwoImage;
+
         public static int CameraOneWidth = 0;
         public static int CameraOneHeight = 0;
+        public static int CameraTwoWidth = 0;
+        public static int CameraTwoHeight = 0;
 
 
 
@@ -48,37 +54,46 @@ namespace shakespear.cameraapp.gui
 
         public static void Capture()
         {
-            if (CameraOne != null)
+            if (CameraOne != null && CaptureLive[0])
             {
                 CameraOne.captureImage();
 
                 CameraOne.getImage(ref CameraOneImage, ref CameraOneWidth, ref CameraOneHeight);
             } 
+
+            if (CameraTwo != null && CaptureLive[1])
+            {
+                CameraTwo.captureImage();
+
+                CameraTwo.getImage(ref CameraTwoImage, ref CameraTwoWidth, ref CameraTwoHeight);
+            }
         }
 
         public static void Update()
         {
-            if (trigConfigure)
+            for (int camera = 0; camera < 2; camera++)
             {
-                trigConfigure = false;
+                if (TrigConfigure[camera])
+            {
+                TrigConfigure[camera] = false;
 
-                string newCamera = CurrentCam;
+                string newCamera = CurrentCam[camera];
 
-                string[] resolution = CurrentResolution.Split("x");
+                string[] resolution = CurrentResolution[camera].Split("x");
                 
                 if (CameraOne != null)
                 {
                     CameraOne.initCamera(
-                        Int32.Parse(CurrentFPS),
+                        Int32.Parse(CurrentFPS[camera]),
                         Int32.Parse(resolution[0]),
                         Int32.Parse(resolution[1]));  
                 }
                               
             } 
             
-            else if (trigReport)
+            else if (TrigReport[camera])
             {
-                trigReport = false;
+                TrigReport[camera] = false;
 
                 if (CameraOne != null)
                 {
@@ -90,23 +105,22 @@ namespace shakespear.cameraapp.gui
                 }
             }
 
-            else if (trigSettings)
+            else if (TrigSettings[camera])
             {
-                trigSettings = false;
+                TrigSettings[camera] = false;
 
                 if (CameraOne != null)
                 {
                     CameraOne.toggleSettings();
                 }
             }
-            
-            else {
-
-                if (captureLive)
-                {
-                    Capture();
-                }
             }
+
+
+            Capture();
+
+
+            
         }
     }
 }

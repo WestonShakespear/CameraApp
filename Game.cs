@@ -70,7 +70,12 @@ namespace shakespear.cameraapp {
             GUI.WindowOnOffs();
 
             int FBOutput = this.shaderManager.FramebufferTexture;
-            GUI.LoadOCCTWindow(ref CameraWidth, ref CameraHeight, ref FBOutput);
+
+
+            GUI.CameraOneWindow(ref CameraWidth, ref CameraHeight, ref FBOutput);
+            GUI.CameraTwoWindow(ref CameraWidth, ref CameraHeight, ref FBOutput);
+            GUI.CameraThreeWindow(ref CameraWidth, ref CameraHeight, ref FBOutput);
+
             UIController.Render();
             ImGuiController.CheckGLError("End of frame");
 
