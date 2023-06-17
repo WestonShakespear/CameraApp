@@ -6,7 +6,7 @@ using StbImageSharp;
 using System.IO;
 using System.Diagnostics;
 
-namespace testOne
+namespace shakespear.cameraapp.shader
 {
     // A helper class, much like Shader, meant to simplify loading textures.
     public class Texture

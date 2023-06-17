@@ -1,7 +1,7 @@
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 
-namespace testOne
+namespace shakespear.cameraapp.camera
 {
     public static class CamExtension
     {

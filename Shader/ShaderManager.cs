@@ -1,6 +1,8 @@
 using OpenTK.Graphics.OpenGL4;
 
-namespace testOne
+using shakespear.cameraapp.shader;
+
+namespace shakespear.cameraapp.shadermanager
 {
     public class ShaderManager
     {

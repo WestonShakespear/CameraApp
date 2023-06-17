@@ -15,7 +15,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using System.Diagnostics;
 using ErrorCode = OpenTK.Graphics.OpenGL4.ErrorCode;
 
-namespace testOne
+namespace shakespear.cameraapp.gui
 {
     public class ImGuiController : IDisposable
     {

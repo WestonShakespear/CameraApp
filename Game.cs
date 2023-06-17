@@ -6,8 +6,12 @@ using OpenTK.Mathematics;
 
 using ImGuiNET;
 
-namespace testOne {
-    public class Game : GameWindow {
+using shakespear.cameraapp.gui;
+using shakespear.cameraapp.camera;
+using shakespear.cameraapp.shadermanager;
+
+namespace shakespear.cameraapp {
+    public class Window : GameWindow {
 
         public static float WindowWidth;
         public static float WindowHeight;
@@ -23,18 +27,11 @@ namespace testOne {
 
              
         public static bool captureLive = false;
-
-        
-
-        public float cameraWidth = 800f;
-        public float cameraHeight = 600f;
-
-
         public static bool trigConfigure = false;
         public static bool trigReport = false;
         public static bool trigSettings = false;
 
-        public Game(int width, int height, string title, string fontPath, float fontSize)
+        public Window(int width, int height, string title, string fontPath, float fontSize)
             : base(GameWindowSettings.Default, new NativeWindowSettings()
             {
                 Title = title,

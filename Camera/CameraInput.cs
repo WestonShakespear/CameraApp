@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Diagnostics;
 using StbImageSharp;
 
-namespace testOne
+namespace shakespear.cameraapp.camera
 {
     public class CameraInput
     {
