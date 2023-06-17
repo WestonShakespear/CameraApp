@@ -179,10 +179,9 @@ namespace shakespear.cameraapp.camera
             return reportList;
         }
 
-        public void getImage(out byte[]? rawImage, out byte[]? conImage, out int width, out int height)
+        public void getImage(ref byte[]? rawImage, ref int width, ref int height)
         {
             rawImage = null;
-            conImage = null;
             width = 0;
             height = 0;
             
@@ -192,7 +191,6 @@ namespace shakespear.cameraapp.camera
                 height = this.currentMat.Height;
 
                 rawImage = this.currentRawImage;
-                conImage = this.currentConImage;
             }
         }
     }

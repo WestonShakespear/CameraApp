@@ -6,26 +6,13 @@ namespace shakespear.cameraapp.gui
 {
     public static class GUI
     {
-        public static float fontSize = 0.6f;
+        
 
-        public static bool showDemoWindow = false;
-        public static bool showStatistics = false;
-        public static bool showMaterialEditor = false;
-        public static bool showObjectProperties = true;
-        public static bool showLightProperties = true;
-        public static bool showOutliner = true;
-
-        public static float spacing = 2f;
-
-        public static void WindowOnOffs(List<string[]> log)
+        public static void WindowOnOffs()
         {
             LoadMenuBar();
-
             cameraSettingsWindow();
-
-            LogWindow(log);
-            //demoValueWindow();
-            //ImGui.ShowDemoWindow();
+            LogWindow();
         }
 
         public static void LoadOCCTWindow(ref float CameraWidth, ref float CameraHeight, ref int framebufferTexture)
@@ -72,9 +59,9 @@ namespace shakespear.cameraapp.gui
             {
                 if (ImGui.BeginMenu("Debug"))
                 {
-                    ImGui.Checkbox("Statistics", ref showStatistics);
+                    ImGui.Checkbox("Statistics", ref UserLogic.showStatistics);
                     ImGui.Separator();
-                    ImGui.Checkbox("ImGUI Demo ", ref showDemoWindow);
+                    ImGui.Checkbox("ImGUI Demo ", ref UserLogic.showDemoWindow);
                     ImGui.EndMenu();
                 }
 
@@ -82,15 +69,15 @@ namespace shakespear.cameraapp.gui
 
                 if (ImGui.BeginMenu("Editor"))
                 {
-                    ImGui.Checkbox("Show Object Properties", ref showObjectProperties);
+                    ImGui.Checkbox("Show Object Properties", ref UserLogic.showObjectProperties);
                     ImGui.Separator();
-                    ImGui.Checkbox("Show Light Properties", ref showLightProperties); 
+                    ImGui.Checkbox("Show Light Properties", ref UserLogic.showLightProperties); 
                     ImGui.Separator();
-                    ImGui.Checkbox("Show Outliner", ref showOutliner);
+                    ImGui.Checkbox("Show Outliner", ref UserLogic.showOutliner);
                     ImGui.Separator();
                     // ImGui.Checkbox("Show Settings", ref showSettings);
                     ImGui.Separator();
-                    ImGui.Checkbox("Show Material Editor", ref showMaterialEditor);
+                    ImGui.Checkbox("Show Material Editor", ref UserLogic.showMaterialEditor);
                     ImGui.EndMenu();
                 }
 
@@ -114,7 +101,7 @@ namespace shakespear.cameraapp.gui
 
 
 
-        public static void LogWindow(List<string[]> logData)
+        public static void LogWindow()
         {
             int col = 3;
             ImGui.Begin("Log");
@@ -126,7 +113,7 @@ namespace shakespear.cameraapp.gui
             ImGui.TableSetupColumn("Message");
             ImGui.TableHeadersRow();
 
-            List<string[]> rev = new List<string[]>(logData);
+            List<string[]> rev = new List<string[]>(UserLogic.LogData);
             
             rev.Reverse();
 
@@ -144,24 +131,7 @@ namespace shakespear.cameraapp.gui
             ImGui.End();
         }
 
-        // min s=384x4 fps=5 
-        // max s=1920x1200 fps=15
-
-        // min s=1920x1080 fps=5 
-        // max s=1920x1080 fps=15
-
-        // min s=1280x720 fps=5 
-        // max s=1280x720 fps=40
-
-        // min s=640x480 fps=5 
-        // max s=640x480 fps=60.0002
-
-        public static string[] camNames = {"video0", "video1", "video2"};
-        public static string[] resolutionItems = {"640x480", "1280x720", "1920x1080"};
-
-        public static string currentCam = "video0";
-        public static string currentResolution = "640x480";
-        public static string currentFPS = "30";
+        
 
         
 
@@ -194,19 +164,17 @@ namespace shakespear.cameraapp.gui
         {
             ImGui.Begin("Demo");
 
-            ImGui.Checkbox("Capture", ref shakespear.cameraapp.Window.captureLive);
+            ImGui.Checkbox("Capture", ref UserLogic.captureLive);
 
             ImGui.Separator();
 
-            // ImGui.InputText("FPS: ", Game.fps, 100);
-
             if (ImGui.Button("Report Config"))
             {
-                shakespear.cameraapp.Window.trigReport = true;
+                UserLogic.trigReport = true;
             }
             
-            createBasicDropdown("Camera:", camNames, ref currentCam);
-            createBasicDropdown("Resolution:", resolutionItems, ref currentResolution);
+            createBasicDropdown("Camera:", UserLogic.camNames, ref UserLogic.CurrentCam);
+            createBasicDropdown("Resolution:", UserLogic.resolutionItems, ref UserLogic.CurrentResolution);
 
             Dictionary<string, string[]> fpsItems = new Dictionary<string, string[]>();
 
@@ -220,40 +188,22 @@ namespace shakespear.cameraapp.gui
             //fpsItems.Add("1920x1200", mFPS);
             fpsItems.Add("1920x1080", mFPS);
             
-            createBasicDropdown("FPS:", fpsItems[currentResolution], ref currentFPS);
+            createBasicDropdown("FPS:", fpsItems[UserLogic.CurrentResolution], ref UserLogic.CurrentFPS);
             
 
             if (ImGui.Button("Configure"))
             {
-                shakespear.cameraapp.Window.trigConfigure = true;
+                UserLogic.trigConfigure = true;
             }
 
             ImGui.Separator();
 
             if (ImGui.Button("Toggle Settings"))
             {
-                shakespear.cameraapp.Window.trigSettings = true;
+                UserLogic.trigSettings = true;
             }
 
             ImGui.Separator();
-
-            // ImGui.Checkbox("Canny", ref Game.canny);
-            // ImGui.SliderInt("A:", ref Game.a, 0, 255);
-            // ImGui.SliderInt("B:", ref Game.b, 0, 255);
-
-
-            // ImGui.SliderFloat("Vert1Z", ref Game.vertices[2], -1.0f, 1.0f);
-
-            // ImGui.SliderFloat("Vert2X", ref Game.vertices[3], -1.0f, 1.0f);
-            // ImGui.SliderFloat("Vert2Y", ref Game.vertices[4], -1.0f, 1.0f);
-            // ImGui.SliderFloat("Vert2Z", ref Game.vertices[5], -1.0f, 1.0f);
-
-            // ImGui.SliderFloat("Vert3X", ref Game.vertices[6], -1.0f, 1.0f);
-            // ImGui.SliderFloat("Vert3Y", ref Game.vertices[7], -1.0f, 1.0f);
-            // ImGui.SliderFloat("Vert3Z", ref Game.vertices[8], -1.0f, 1.0f);
-
-
-            // ImGui.ColorPicker4("color", ref Game.colorPicked);
             ImGui.End();
         }
 
@@ -335,7 +285,7 @@ namespace shakespear.cameraapp.gui
             ImGui.GetStyle().ItemSpacing = new System.Numerics.Vector2(8, 2);
             ImGui.GetStyle().ItemInnerSpacing = new System.Numerics.Vector2(1, 4);
             ImGui.GetStyle().WindowMenuButtonPosition = ImGuiDir.None;
-            ImGui.GetIO().FontGlobalScale = fontSize;
+            ImGui.GetIO().FontGlobalScale = UserLogic.fontSize;
 
             ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(new System.Numerics.Vector3(0.9f), 1));
 

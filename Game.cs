@@ -7,7 +7,6 @@ using OpenTK.Mathematics;
 using ImGuiNET;
 
 using shakespear.cameraapp.gui;
-using shakespear.cameraapp.camera;
 using shakespear.cameraapp.shadermanager;
 
 namespace shakespear.cameraapp {
@@ -19,17 +18,10 @@ namespace shakespear.cameraapp {
         public static float CameraHeight;
 
         public ImGuiController UIController;
-        public CameraInput test;
         public ShaderManager shaderManager;
         
 
-        List<string[]> logData = new List<string[]>();
-
-             
-        public static bool captureLive = false;
-        public static bool trigConfigure = false;
-        public static bool trigReport = false;
-        public static bool trigSettings = false;
+        
 
         public Window(int width, int height, string title, string fontPath, float fontSize)
             : base(GameWindowSettings.Default, new NativeWindowSettings()
@@ -55,20 +47,27 @@ namespace shakespear.cameraapp {
 
             UIController = new ImGuiController((int)WindowWidth, (int)WindowHeight, fontPath, fontSize);
 
-            this.test = new CameraInput(1);
+            UserLogic.CameraOne = new camera.CameraInput(1);
 
             this.shaderManager = new ShaderManager(CameraWidth, CameraHeight);
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
-            this.updateGLogic();
+            UserLogic.Update();
 
+            if (UserLogic.CameraOneImage != null)
+            {
+                this.shaderManager.UpdateTextureMemory(UserLogic.CameraOneImage, UserLogic.CameraOneWidth, UserLogic.CameraOneHeight);
+            }
             this.shaderManager.RenderFrame();
+            
+
+            
 
             UIController.Update(this, (float)args.Time);
             ImGui.DockSpaceOverViewport();
-            GUI.WindowOnOffs(this.logData);
+            GUI.WindowOnOffs();
 
             int FBOutput = this.shaderManager.FramebufferTexture;
             GUI.LoadOCCTWindow(ref CameraWidth, ref CameraHeight, ref FBOutput);
@@ -88,7 +87,7 @@ namespace shakespear.cameraapp {
 
             if (input.IsKeyDown(Keys.Escape))
             {
-                this.log("DEBUG", "Application close");
+                
             }
         }
 
@@ -119,117 +118,12 @@ namespace shakespear.cameraapp {
         {
             this.shaderManager.Dispose();
 
-            if (test != null)
+            if (UserLogic.CameraOne != null)
             {
-                test.destroy();
+                UserLogic.CameraOne.destroy();
             }
 
             base.OnUnload();
-        }
-
-        
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        public void capture()
-        {
-            
-            test.captureImage();
-
-            test.getImage(out byte[]? imageRaw,
-                          out byte[]? imageCon,
-                          out int width,
-                          out int height);
-            
-
-            if (imageRaw != null)
-            {
-                this.shaderManager.UpdateTextureMemory(imageRaw, width, height);
-            } 
-            
-        }
-
-        public void log(string level, string message)
-        {
-            this.logData.Add(new string[] {level, DateTime.Now.ToString("HH:mm:ss"), message});
-        }
-
-        private void updateGLogic()
-        {
-            if (trigConfigure)
-            {
-                trigConfigure = false;
-
-                string newCamera = GUI.currentCam;
-
-                string[] resolution = GUI.currentResolution.Split("x");
-                string newWidth = resolution[0];
-                string newHeight = resolution[1];
-       
-                string newFPS = GUI.currentFPS;
-
-
-                Console.WriteLine("Triggered: c:{0} w:{1} h:{2} f:{3}", newCamera, newWidth, newHeight, newFPS);
-
-                this.test.initCamera(Int32.Parse(newFPS), Int32.Parse(newWidth), Int32.Parse(newHeight));                
-            } 
-            
-            else if (trigReport)
-            {
-                trigReport = false;
-
-                string[] values = this.test.reportCamera();
-                foreach (string value in values)
-                {
-                    this.log("USER", value);
-                }
-            }
-
-            else if (trigSettings)
-            {
-                trigSettings = false;
-
-                if (this.test != null)
-                {
-                    this.test.toggleSettings();
-                }
-            }
-            
-            else {
-                if (captureLive)
-                {
-                    this.capture();
-                }
-            }
-        }
+        } 
     }
 }
