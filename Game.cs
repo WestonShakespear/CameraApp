@@ -19,6 +19,7 @@ namespace shakespear.cameraapp {
 
         public ImGuiController UIController;
         public ShaderManager shaderManager;
+        public ShaderManager shaderManager2;
         
 
         
@@ -48,8 +49,12 @@ namespace shakespear.cameraapp {
             UIController = new ImGuiController((int)WindowWidth, (int)WindowHeight, fontPath, fontSize);
 
             UserLogic.CameraOne = new camera.CameraInput(1);
+            UserLogic.CameraTwo = new camera.CameraInput(2);
 
-            this.shaderManager = new ShaderManager(CameraWidth, CameraHeight);
+            this.shaderManager = new ShaderManager(TextureUnit.Texture0, CameraWidth, CameraHeight, @"noSignal.jpg");
+            this.shaderManager2 = new ShaderManager(TextureUnit.Texture0, CameraWidth, CameraHeight, @"noSignal2.jpg");
+            
+            
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
@@ -61,6 +66,13 @@ namespace shakespear.cameraapp {
                 this.shaderManager.UpdateTextureMemory(UserLogic.CameraOneImage, UserLogic.CameraOneWidth, UserLogic.CameraOneHeight);
             }
             this.shaderManager.RenderFrame();
+
+
+            if (UserLogic.CameraTwoImage != null)
+            {
+                this.shaderManager2.UpdateTextureMemory(UserLogic.CameraTwoImage, UserLogic.CameraTwoWidth, UserLogic.CameraTwoHeight);
+            }
+            this.shaderManager2.RenderFrame();
             
 
             
@@ -69,12 +81,12 @@ namespace shakespear.cameraapp {
             ImGui.DockSpaceOverViewport();
             GUI.WindowOnOffs();
 
-            int FBOutput = this.shaderManager.FramebufferTexture;
+            int FBOutputOne = this.shaderManager.FramebufferTexture;
+            int FBOutputTwo = this.shaderManager2.FramebufferTexture;
 
-
-            GUI.CameraOneWindow(ref CameraWidth, ref CameraHeight, ref FBOutput);
-            GUI.CameraTwoWindow(ref CameraWidth, ref CameraHeight, ref FBOutput);
-            GUI.CameraThreeWindow(ref CameraWidth, ref CameraHeight, ref FBOutput);
+            GUI.CameraOneWindow(ref CameraWidth, ref CameraHeight, ref FBOutputOne);
+            GUI.CameraTwoWindow(ref CameraWidth, ref CameraHeight, ref FBOutputTwo);
+            //UI.CameraThreeWindow(ref CameraWidth, ref CameraHeight, ref FBOutputOne);
 
             UIController.Render();
             ImGuiController.CheckGLError("End of frame");
@@ -100,8 +112,9 @@ namespace shakespear.cameraapp {
         {
             WindowWidth = e.Width;
             WindowHeight = e.Height;
-
+            
             this.shaderManager.GenFBO();
+            this.shaderManager2.GenFBO();
 
             UIController.WindowResized((int)WindowWidth, (int)WindowHeight);
 
@@ -115,6 +128,9 @@ namespace shakespear.cameraapp {
             this.IsVisible = true;
 
             this.shaderManager.GenFBO();
+            this.shaderManager2.GenFBO();
+            
+            
 
             base.OnLoad();
         }
@@ -122,11 +138,10 @@ namespace shakespear.cameraapp {
         protected override void OnUnload()
         {
             this.shaderManager.Dispose();
+            this.shaderManager2.Dispose();
 
-            if (UserLogic.CameraOne != null)
-            {
-                UserLogic.CameraOne.destroy();
-            }
+            UserLogic.CameraOne?.destroy();
+            UserLogic.CameraOne?.destroy();
 
             base.OnUnload();
         } 

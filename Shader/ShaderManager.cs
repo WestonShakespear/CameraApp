@@ -21,7 +21,7 @@ namespace shakespear.cameraapp.shadermanager
             1, 2, 3
         };
 
-        private readonly String imagePath = @"noSignal.jpg";
+        private string imagePath;
 
         private Shader shader;
         private Texture texture0;
@@ -37,12 +37,17 @@ namespace shakespear.cameraapp.shadermanager
         private float cameraWidth;
         private float cameraHeight;
 
-        public ShaderManager(float _cameraWidth, float _cameraHeight)
+        private TextureUnit unit;
+
+        public ShaderManager(TextureUnit _unit, float _cameraWidth, float _cameraHeight, string _imagePath)
         {
+            this.unit = _unit;
+            this.imagePath = _imagePath;
             this.cameraWidth = _cameraWidth;
             this.cameraHeight = _cameraHeight;
 
             this.shader = new Shader("Shader/shader.vert", "Shader/shader.frag");
+            
             this.texture0 = new Texture();
         }
 
@@ -52,7 +57,7 @@ namespace shakespear.cameraapp.shadermanager
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, this.FBO);
             GL.BindVertexArray(this.vertexArrayObject);
 
-            this.texture0.Use(TextureUnit.Texture0);
+            this.texture0.Use(this.unit);
             this.shader.Use();
             
             GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
@@ -61,7 +66,8 @@ namespace shakespear.cameraapp.shadermanager
 
         public void UpdateTextureMemory(byte[] _imageRaw, int _width, int _height)
         {
-            texture0.LoadFromMemory(TextureUnit.Texture0, _imageRaw, _width, _height);
+            
+            texture0.LoadFromMemory(unit, _imageRaw, _width, _height);
         }
 
         public void DisposeBuffer()
@@ -82,8 +88,9 @@ namespace shakespear.cameraapp.shadermanager
                 this.DisposeBuffer();
             }
 
-            FBO = GL.GenFramebuffer();
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBO);
+            this.FBO = GL.GenFramebuffer();
+            Console.WriteLine("Binding to {0} from shader man {1}", this.FBO, this.imagePath);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, this.FBO);
 
             // Color Texture
             framebufferTexture = GL.GenTexture();
@@ -122,8 +129,8 @@ namespace shakespear.cameraapp.shadermanager
 
             
 
-            this.texture0.LoadFromFile(TextureUnit.Texture0, this.imagePath);
-            this.texture0.Use(TextureUnit.Texture0);
+            this.texture0.LoadFromFile(this.unit, this.imagePath);
+            this.texture0.Use(this.unit);
             
             // Attach color to FBO
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, framebufferTexture, 0);
@@ -134,7 +141,7 @@ namespace shakespear.cameraapp.shadermanager
                 Console.WriteLine("Framebuffer error: " + fboStatus);
             }
 
-            shader.SetInt("texture0", 0);
+            //shader.SetInt("texture0", 0);
         }
     }
 }

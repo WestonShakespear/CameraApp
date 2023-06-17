@@ -45,10 +45,12 @@ namespace shakespear.cameraapp.shader {
                 Console.WriteLine(infoLog);
             }
 
-            Handle = GL.CreateProgram();
+            this.Handle = GL.CreateProgram();
 
             GL.AttachShader(Handle, VertexShader);
             GL.AttachShader(Handle, FragmentShader);
+
+            Console.WriteLine("Attached Shader to {0}", Handle);
 
             GL.LinkProgram(Handle);
 
@@ -69,6 +71,7 @@ namespace shakespear.cameraapp.shader {
         public void Use()
         {
             GL.UseProgram(Handle);
+            //Console.WriteLine("Using {0}", Handle);
         }
 
         public void SetInt(string name, int value)
