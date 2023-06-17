@@ -14,53 +14,21 @@ namespace testOne {
         public static float CameraWidth;
         public static float CameraHeight;
 
+        public ImGuiController UIController;
         public CameraInput test;
-
-        ImGuiController UIController;
+        public ShaderManager shaderManager;
+        
 
         List<string[]> logData = new List<string[]>();
 
-        Shader? shader;
-
-        public static float[] vertices =
-        {
-            //Position          Texture coordinates
-            1.0f,  1.0f, 0.0f, 1.0f, 1.0f, // top right
-            1.0f, -1.0f, 0.0f, 1.0f, 0.0f, // bottom right
-            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, // bottom left
-            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f  // top left
-        };
-
-        public static uint[] indices =
-        {
-            0, 1, 3,
-            1, 2, 3
-        };
-
-        int VertexArrayObject;
-        int elementBufferObject;
-        int vertexBufferObject;
-
-        public Texture? texture0;
-
-        public Texture? texture1;
-
-
-        public static int a = 0;
-        public static int b = 0;
-
-        public static bool canny = false;
-
+             
         public static bool captureLive = false;
 
-        public int FBO;
-        public int framebufferTexture;
+        
 
-        public float camWidth = 1280f;
-        public float camHeight = 720f;
+        public float cameraWidth = 800f;
+        public float cameraHeight = 600f;
 
-        //public static float angle = 0.0f;
-        //public static System.Numerics.Vector4 colorPicked = new System.Numerics.Vector4(0.0f);
 
         public static bool trigConfigure = false;
         public static bool trigReport = false;
@@ -91,12 +59,28 @@ namespace testOne {
             UIController = new ImGuiController((int)WindowWidth, (int)WindowHeight, fontPath, fontSize);
 
             this.test = new CameraInput(1);
-            
+
+            this.shaderManager = new ShaderManager(CameraWidth, CameraHeight);
         }
 
-        public void log(string level, string message)
+        protected override void OnRenderFrame(FrameEventArgs args)
         {
-            this.logData.Add(new string[] {level, DateTime.Now.ToString("HH:mm:ss"), message});
+            this.updateGLogic();
+
+            this.shaderManager.RenderFrame();
+
+            UIController.Update(this, (float)args.Time);
+            ImGui.DockSpaceOverViewport();
+            GUI.WindowOnOffs(this.logData);
+
+            int FBOutput = this.shaderManager.FramebufferTexture;
+            GUI.LoadOCCTWindow(ref CameraWidth, ref CameraHeight, ref FBOutput);
+            UIController.Render();
+            ImGuiController.CheckGLError("End of frame");
+
+            Context.SwapBuffers();  
+
+            base.OnRenderFrame(args);
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -111,24 +95,32 @@ namespace testOne {
             }
         }
 
+        protected override void OnResize(ResizeEventArgs e)
+        {
+            WindowWidth = e.Width;
+            WindowHeight = e.Height;
+
+            this.shaderManager.GenFBO();
+
+            UIController.WindowResized((int)WindowWidth, (int)WindowHeight);
+
+            GL.Viewport(0, 0, e.Width, e.Height);
+            base.OnResize(e);
+        }
+
         protected override void OnLoad()
         {
-            //GUI.LoadTheme();
-
             this.VSync = VSyncMode.On;
             this.IsVisible = true;
 
-            this.GenFBO(WindowWidth, WindowHeight);
+            this.shaderManager.GenFBO();
 
             base.OnLoad();
         }
 
         protected override void OnUnload()
         {
-            if (shader != null)
-            {
-                shader.Dispose();
-            }
+            this.shaderManager.Dispose();
 
             if (test != null)
             {
@@ -138,26 +130,43 @@ namespace testOne {
             base.OnUnload();
         }
 
-        protected override void OnResize(ResizeEventArgs e)
-        {
-            WindowWidth = e.Width;
-            WindowHeight = e.Height;
-
-            GL.DeleteFramebuffer(FBO);
-            GenFBO(WindowWidth, WindowHeight);
-
-            UIController.WindowResized((int)WindowWidth, (int)WindowHeight);
-
-            GL.Viewport(0, 0, e.Width, e.Height);
-            base.OnResize(e);
-        }
+        
 
         
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         public void capture()
         {
             
-            test.captureImage(a, b);
+            test.captureImage();
 
             test.getImage(out byte[]? imageRaw,
                           out byte[]? imageCon,
@@ -167,22 +176,18 @@ namespace testOne {
 
             if (imageRaw != null)
             {
-                texture0 = texture0?.LoadFromMemory(TextureUnit.Texture0, imageRaw, width, height);
-            }
-
-            if (imageCon != null)
-            {
-                texture1 = texture1?.LoadFromMemory(TextureUnit.Texture1, imageCon, width, height);
-            }
-
+                this.shaderManager.UpdateTextureMemory(imageRaw, width, height);
+            } 
             
-            
+        }
+
+        public void log(string level, string message)
+        {
+            this.logData.Add(new string[] {level, DateTime.Now.ToString("HH:mm:ss"), message});
         }
 
         private void updateGLogic()
         {
-            
-
             if (trigConfigure)
             {
                 trigConfigure = false;
@@ -228,104 +233,6 @@ namespace testOne {
                     this.capture();
                 }
             }
-        }
-
-        protected override void OnRenderFrame(FrameEventArgs args)
-        {
-            this.updateGLogic();
-
-            if (shader != null)
-            {
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBO);
-
-                GL.BindVertexArray(VertexArrayObject);
-
-                texture0?.Use(TextureUnit.Texture0);
-                texture1?.Use(TextureUnit.Texture1);
-                shader.Use();
-                
-                GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            }
-
-            UIController.Update(this, (float)args.Time);
-            ImGui.DockSpaceOverViewport();
-            GUI.WindowOnOffs(this.logData);
-            GUI.LoadOCCTWindow(ref camWidth, ref camHeight, ref framebufferTexture);
-            UIController.Render();
-            ImGuiController.CheckGLError("End of frame");
-
-            Context.SwapBuffers();  
-
-            base.OnRenderFrame(args);
-        }
-
-
-        
-
-
-        
-
-        public void GenFBO(float CamWidth, float CamHeight)
-        {
-            FBO = GL.GenFramebuffer();
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBO);
-
-            // Color Texture
-            framebufferTexture = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, framebufferTexture);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb16f, (int)CamWidth, (int)CamHeight, 0, PixelFormat.Rgb, PixelType.UnsignedByte, IntPtr.Zero);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-
-
-
-            GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-
-            VertexArrayObject = GL.GenVertexArray();
-            GL.BindVertexArray(VertexArrayObject);
-
-                vertexBufferObject = GL.GenBuffer();
-                GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
-                GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
-
-                elementBufferObject = GL.GenBuffer();
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementBufferObject);
-                GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
-
-            shader = new Shader("shader.vert", "shader.frag");
-
-            var vertexLocation = shader.GetAttribLocation("aPosition");
-            GL.EnableVertexAttribArray(vertexLocation);
-            GL.VertexAttribPointer(vertexLocation, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
-
-            var texCoordLocation = shader.GetAttribLocation("aTexCoord");
-            GL.EnableVertexAttribArray(texCoordLocation);
-            GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
-
-
-            String imagePath = @"noSignal.jpg";
-
-            texture0 = Texture.LoadFromFile(TextureUnit.Texture0, imagePath);
-            texture0.Use(TextureUnit.Texture0);
-
-            texture1 = Texture.LoadFromFile(TextureUnit.Texture1, imagePath);
-            texture1.Use(TextureUnit.Texture1);
-            
-            
-            // Attach color to FBO
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, framebufferTexture, 0);
-
-            var fboStatus = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
-            if (fboStatus != FramebufferErrorCode.FramebufferComplete)
-            {
-                Console.WriteLine("Framebuffer error: " + fboStatus);
-            }
-
-            shader.SetInt("texture0", 0);
-            shader.SetInt("texture1", 1);
         }
     }
 }
