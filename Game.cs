@@ -53,16 +53,14 @@ namespace testOne {
 
         public static bool captureLive = false;
 
-        public int FBO; //RBO;
+        public int FBO;
         public int framebufferTexture;
 
-        public float camWidth = 800f;
-        public float camHeight = 600f;
+        public float camWidth = 1280f;
+        public float camHeight = 720f;
 
-        public static float angle = 0.0f;
-        public static System.Numerics.Vector4 colorPicked = new System.Numerics.Vector4(0.0f);
-
-        public static byte[] fps = new byte[100];
+        //public static float angle = 0.0f;
+        //public static System.Numerics.Vector4 colorPicked = new System.Numerics.Vector4(0.0f);
 
         public static bool trigConfigure = false;
         public static bool trigReport = false;

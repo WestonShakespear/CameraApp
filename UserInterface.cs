@@ -24,7 +24,9 @@ namespace testOne
         public static void WindowOnOffs(List<string[]> log)
         {
             LoadMenuBar();
-            demoWindow();
+
+            cameraSettingsWindow();
+
             LogWindow(log);
             //demoValueWindow();
             //ImGui.ShowDemoWindow();
@@ -192,7 +194,7 @@ namespace testOne
 
         
 
-        public static void demoWindow()
+        public static void cameraSettingsWindow()
         {
             ImGui.Begin("Demo");
 
@@ -259,17 +261,17 @@ namespace testOne
             ImGui.End();
         }
 
-        public static void demoValueWindow()
-        {
-            ImGui.Begin("Values");
-            ImGui.Text(Game.angle.ToString());
-            ImGui.Separator();
-            ImGui.Text("R: " + Game.colorPicked.X.ToString());
-            ImGui.Text("G: " + Game.colorPicked.Y.ToString());
-            ImGui.Text("B: " + Game.colorPicked.Z.ToString());
-            ImGui.Text("A: " + Game.colorPicked.W.ToString());
-            ImGui.End();
-        }
+        // public static void demoValueWindow()
+        // {
+        //     ImGui.Begin("Values");
+        //     ImGui.Text(Game.angle.ToString());
+        //     ImGui.Separator();
+        //     ImGui.Text("R: " + Game.colorPicked.X.ToString());
+        //     ImGui.Text("G: " + Game.colorPicked.Y.ToString());
+        //     ImGui.Text("B: " + Game.colorPicked.Z.ToString());
+        //     ImGui.Text("A: " + Game.colorPicked.W.ToString());
+        //     ImGui.End();
+        // }
 
         // public static void LoadStatistics(float spacing)
         // {
