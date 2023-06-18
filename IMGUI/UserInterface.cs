@@ -13,6 +13,62 @@ namespace shakespear.cameraapp.gui
             LoadMenuBar();
             CameraSettingsWindow();
             LogWindow();
+            FilterWindow();
+            ControlWindow();
+        }
+
+        public static void ControlWindow()
+        {
+            ImGui.Begin("Control");
+
+            ImGui.Dummy(new System.Numerics.Vector2(0f, UserLogic.spacing * 30));
+            ImGui.Text("Control");
+            ImGui.Separator();
+            ImGui.Dummy(new System.Numerics.Vector2(0f, UserLogic.spacing * 10));
+            
+            ImGui.SliderInt("Disparities", ref UserLogic.Disparities, 0, 255);
+
+            ImGui.Dummy(new System.Numerics.Vector2(0f, UserLogic.spacing * 10));
+
+            ImGui.SliderInt("Block Size", ref UserLogic.BlockSize, 5, 255);
+
+            ImGui.End();
+        }
+
+        public static void FilterWindow()
+        {
+            ImGui.Begin("Filters");
+
+            for (int camera = 0; camera < UserLogic.CaptureLive.Length; camera++)
+            {
+                ImGui.Dummy(new System.Numerics.Vector2(0f, UserLogic.spacing * 30));
+                ImGui.Text("Camera " + (camera+1));
+                ImGui.Separator();
+                ImGui.Dummy(new System.Numerics.Vector2(0f, UserLogic.spacing * 10));
+                CreateFilter(camera);
+            }
+
+            ImGui.Separator();
+            ImGui.End();
+        }
+
+        private static void CreateFilter(int _camera)
+        {
+            ImGui.Checkbox("Canny " + (_camera+1), ref UserLogic.FilterSettings[_camera,0]);
+            ImGui.SliderInt("A " + (_camera+1), ref UserLogic.BlockSize, 5, 255);
+            ImGui.SliderInt("B " + (_camera+1), ref UserLogic.BlockSize, 5, 255);
+            ImGui.Dummy(new System.Numerics.Vector2(0f, UserLogic.spacing * 10));
+
+            ImGui.Checkbox("Guassian " + (_camera+1), ref UserLogic.FilterSettings[_camera,1]);
+            ImGui.SliderInt("Size " + (_camera+1), ref UserLogic.BlockSize, 5, 255);
+            ImGui.SliderInt("Sigma " + (_camera+1), ref UserLogic.BlockSize, 5, 255);
+            ImGui.Dummy(new System.Numerics.Vector2(0f, UserLogic.spacing * 10));
+            
+            ImGui.Checkbox("Threshold " + (_camera+1), ref UserLogic.FilterSettings[_camera,2]);
+            ImGui.SliderInt("Min " + (_camera+1), ref UserLogic.BlockSize, 5, 255);
+            ImGui.SliderInt("Set " + (_camera+1), ref UserLogic.BlockSize, 5, 255);
+
+            ImGui.Separator();
         }
 
 

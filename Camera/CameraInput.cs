@@ -111,17 +111,19 @@ namespace shakespear.cameraapp.camera
         {
             if (this.camera != null)
             {      
-                return await Task.Run(() => this.camera.QueryFrame());
+                return await Task.Run(() => convert(this.camera.QueryFrame()));
             }
 
             return null;
         }
 
-        private async Task<byte[]> TaskConvert(Mat image)
+        public async Task<byte[]> TaskConvert(Mat image)
         {
             var buffer = new VectorOfByte();
 
-            await Task.Run(() => CvInvoke.Imencode(".jpg", image, buffer));
+            await Task.Run(() => {
+                CvInvoke.Imencode(".jpg", image, buffer);
+            });
 
             return await Task.Run(() => ImageResult.FromMemory(buffer.ToArray(), ColorComponents.RedGreenBlueAlpha).Data);
         }
@@ -134,20 +136,20 @@ namespace shakespear.cameraapp.camera
             this.ready = true;
         }
 
-        // private Mat convert(Mat image)
-        // {
-        //     Mat imgGrayscale = new Mat(image.Size, DepthType.Cv8U, 1);
-        //     Mat imgBlurred = new Mat(image.Size, DepthType.Cv8U, 1);
-        //     Mat imgCanny = new Mat(image.Size, DepthType.Cv8U, 1);
+        private Mat convert(Mat image)
+        {
+            Mat imgGrayscale = new Mat(image.Size, DepthType.Cv8U, 1);
+            Mat imgBlurred = new Mat(image.Size, DepthType.Cv8U, 1);
+            Mat imgCanny = new Mat(image.Size, DepthType.Cv8U, 1);
 
-        //     CvInvoke.CvtColor(image, imgGrayscale, ColorConversion.Bgr2Gray);
+            CvInvoke.CvtColor(image, imgGrayscale, ColorConversion.Bgr2Gray);
 
-        //     CvInvoke.GaussianBlur(imgGrayscale, imgBlurred, new Size(5, 5), 1.5);
+            // CvInvoke.GaussianBlur(imgGrayscale, imgBlurred, new Size(5, 5), 1.5);
 
-        //     CvInvoke.Canny(imgBlurred, imgCanny, this.a, this.b);
+            // CvInvoke.Canny(imgBlurred, imgCanny, 10, 5);
 
-        //     return imgCanny;
-        // }
+            return imgGrayscale;
+        }
 
         public void captureImage()
         {
@@ -179,8 +181,9 @@ namespace shakespear.cameraapp.camera
             return reportList;
         }
 
-        public void getImage(ref byte[]? rawImage, ref int width, ref int height)
+        public void getImage(ref Mat? image, ref byte[]? rawImage, ref int width, ref int height)
         {
+            image = null;
             rawImage = null;
             width = 0;
             height = 0;
@@ -191,6 +194,7 @@ namespace shakespear.cameraapp.camera
                 height = this.currentMat.Height;
 
                 rawImage = this.currentRawImage;
+                image = this.currentMat;
             }
         }
     }

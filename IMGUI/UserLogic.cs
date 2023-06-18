@@ -1,4 +1,8 @@
 using shakespear.cameraapp.camera;
+using Emgu.CV;
+
+using Emgu.CV.Util;
+using Emgu.CV.CvEnum;
 
 namespace shakespear.cameraapp.gui
 {
@@ -27,21 +31,32 @@ namespace shakespear.cameraapp.gui
         public static string[] CurrentFPS = {"30", "30", "30"};
 
 
-        public static bool[] CaptureLive = {false, false, false};
+        public static bool[] CaptureLive = {true, true, true};
         public static bool[] TrigConfigure = {false, false, false};
         public static bool[] TrigReport = {false, false, false};
         public static bool[] TrigSettings = {false, false, false};
+
+        public static bool[,] FilterSettings = {{false, false, false}, {false, false, false}, {false, false, false}};
 
         public static CameraInput? CameraOne;
         public static CameraInput? CameraTwo;
 
         public static byte[]? CameraOneImage;
         public static byte[]? CameraTwoImage;
+        public static byte[]? OutputImage;
 
         public static int CameraOneWidth = 0;
         public static int CameraOneHeight = 0;
         public static int CameraTwoWidth = 0;
         public static int CameraTwoHeight = 0;
+
+
+        private static Emgu.CV.Mat? CameraOneMat;
+        private static Emgu.CV.Mat? CameraTwoMat;
+
+
+        public static int Disparities = 0;
+        public static int BlockSize = 5;
 
 
 
@@ -58,18 +73,21 @@ namespace shakespear.cameraapp.gui
             {
                 CameraOne.captureImage();
 
-                CameraOne.getImage(ref CameraOneImage, ref CameraOneWidth, ref CameraOneHeight);
+                CameraOne.getImage(ref CameraOneMat, ref CameraOneImage, ref CameraOneWidth, ref CameraOneHeight);
             } 
 
             if (CameraTwo != null && CaptureLive[1])
             {
                 CameraTwo.captureImage();
 
-                CameraTwo.getImage(ref CameraTwoImage, ref CameraTwoWidth, ref CameraTwoHeight);
+                CameraTwo.getImage(ref CameraTwoMat, ref CameraTwoImage, ref CameraTwoWidth, ref CameraTwoHeight);
             }
+
+            
+
         }
 
-        public static void Update()
+        public static async void Update()
         {
             for (int camera = 0; camera < 2; camera++)
             {
@@ -118,7 +136,32 @@ namespace shakespear.cameraapp.gui
 
 
             Capture();
+            if (CameraOneMat != null && CameraTwoMat != null)
+            {
+                Mat OutputMat = new Mat();
 
+                int disp = (Disparities % 32) * 32;
+                int block = BlockSize;
+                if (block % 2 == 0)
+                {
+                    block -= 1;
+                }
+
+                StereoBM stereo = new StereoBM(disp, block);
+                
+                stereo.Compute(CameraOneMat, CameraTwoMat, OutputMat);
+
+                Mat show = new Mat();
+
+                OutputMat.ConvertTo(show, DepthType.Cv8U);
+
+                if (CameraOne != null)
+                {
+                    OutputImage = await CameraOne.TaskConvert(show);
+                }
+                
+            }
+            
 
             
         }
