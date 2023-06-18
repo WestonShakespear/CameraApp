@@ -36,6 +36,19 @@ namespace shakespear.cameraapp.camera
 
         
         private VideoCapture.API api = VideoCapture.API.DShow;
+
+
+        private bool canny = false;
+        private bool guassian = false;
+        private bool threshold = false;
+
+
+        int cannyA = 0;
+        int cannyB = 0;
+        int guassSize = 0;
+        int guassSigma = 0;
+        int thresMin = 0;
+        int thresMax = 0;
         
 
         public CameraInput(int _cameraIndex)
@@ -138,17 +151,61 @@ namespace shakespear.cameraapp.camera
 
         private Mat convert(Mat image)
         {
-            Mat imgGrayscale = new Mat(image.Size, DepthType.Cv8U, 1);
-            Mat imgBlurred = new Mat(image.Size, DepthType.Cv8U, 1);
-            Mat imgCanny = new Mat(image.Size, DepthType.Cv8U, 1);
+            Mat imgOutput = new Mat(image.Size, DepthType.Cv8U, 1);
+            Mat imgTemp = new Mat(image.Size, DepthType.Cv8U, 1);
 
-            CvInvoke.CvtColor(image, imgGrayscale, ColorConversion.Bgr2Gray);
+            CvInvoke.CvtColor(image, imgOutput, ColorConversion.Bgr2Gray);
 
-            // CvInvoke.GaussianBlur(imgGrayscale, imgBlurred, new Size(5, 5), 1.5);
+            if (this.threshold)
+            {
+                imgTemp = imgOutput.Clone();
+                CvInvoke.GaussianBlur(imgTemp, imgOutput, new Size(5, 5), 1.5);
+            }
+
+            if (this.guassian)
+            {
+                imgTemp = imgOutput.Clone();
+                CvInvoke.GaussianBlur(imgTemp, imgOutput, new Size(guassSize, guassSize), guassSigma);
+            }
+
+            if (this.canny)
+            {
+                imgTemp = imgOutput.Clone();
+                CvInvoke.Canny(imgTemp, imgOutput, cannyA, cannyB);
+            }
+
+            
 
             // CvInvoke.Canny(imgBlurred, imgCanny, 10, 5);
 
-            return imgGrayscale;
+            return imgOutput;
+        }
+
+        public void UpdateFilterStatus(bool _canny, bool _gaussian, bool _threshold)
+        {
+            this.canny = _canny;
+            this.guassian = _gaussian;
+            this.threshold = _threshold;
+        }
+
+        public void UpdateFilterSettings(int _cannyA,
+                                         int _cannyB,
+                                         int _guassSize,
+                                         int _guassSigma,
+                                         int _thresMin,
+                                         int _thresMax)
+        {
+            this.cannyA = _cannyA;
+            this.cannyB = _cannyB;
+            this.guassSize = _guassSize;
+            if (this.guassSize % 2 == 0)
+            {
+                this.guassSize -= 1;
+            }
+            
+            this.guassSigma = _guassSigma;
+            this.thresMin = _thresMin;
+            this.thresMax = _thresMax;
         }
 
         public void captureImage()

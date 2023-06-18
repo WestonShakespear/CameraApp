@@ -36,7 +36,10 @@ namespace shakespear.cameraapp.gui
         public static bool[] TrigReport = {false, false, false};
         public static bool[] TrigSettings = {false, false, false};
 
-        public static bool[,] FilterSettings = {{false, false, false}, {false, false, false}, {false, false, false}};
+        public static bool[,] FilterStatus = {{false, false, false}, {false, false, false}, {false, false, false}};
+        public static int[,,] FilterSettings = { { {0, 0}, {5, 0}, {0, 0} },
+                                                 { {0, 0}, {5, 0}, {0, 0} },
+                                                 { {0, 0}, {5, 0}, {0, 0} } };
 
         public static CameraInput? CameraOne;
         public static CameraInput? CameraTwo;
@@ -71,6 +74,14 @@ namespace shakespear.cameraapp.gui
         {
             if (CameraOne != null && CaptureLive[0])
             {
+                CameraOne.UpdateFilterStatus(FilterStatus[0,0], FilterStatus[0,1], FilterStatus[0,2]);
+
+                CameraOne.UpdateFilterSettings(FilterSettings[0,0,0],
+                                               FilterSettings[0,0,1],
+                                               FilterSettings[0,1,0],
+                                               FilterSettings[0,1,1],
+                                               FilterSettings[0,2,0],
+                                               FilterSettings[0,2,1]);
                 CameraOne.captureImage();
 
                 CameraOne.getImage(ref CameraOneMat, ref CameraOneImage, ref CameraOneWidth, ref CameraOneHeight);
@@ -78,13 +89,18 @@ namespace shakespear.cameraapp.gui
 
             if (CameraTwo != null && CaptureLive[1])
             {
+                CameraTwo.UpdateFilterStatus(FilterStatus[1,0], FilterStatus[1,1], FilterStatus[1,2]);
+
+                CameraTwo.UpdateFilterSettings(FilterSettings[1,0,0],
+                                               FilterSettings[1,0,1],
+                                               FilterSettings[1,1,0],
+                                               FilterSettings[1,1,1],
+                                               FilterSettings[1,2,0],
+                                               FilterSettings[1,2,1]);
                 CameraTwo.captureImage();
 
                 CameraTwo.getImage(ref CameraTwoMat, ref CameraTwoImage, ref CameraTwoWidth, ref CameraTwoHeight);
             }
-
-            
-
         }
 
         public static async void Update()
