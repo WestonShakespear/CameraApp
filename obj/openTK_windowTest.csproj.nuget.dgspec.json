@@ -1,25 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\wes\\github-repos\\cameraapp2\\cameraapp\\openTK_windowTest.csproj": {}
+    "C:\\Users\\Initec\\Documents\\Personal\\cameraapp\\openTK_windowTest.csproj": {}
   },
   "projects": {
-    "C:\\Users\\wes\\github-repos\\cameraapp2\\cameraapp\\openTK_windowTest.csproj": {
+    "C:\\Users\\Initec\\Documents\\Personal\\cameraapp\\openTK_windowTest.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\wes\\github-repos\\cameraapp2\\cameraapp\\openTK_windowTest.csproj",
+        "projectUniqueName": "C:\\Users\\Initec\\Documents\\Personal\\cameraapp\\openTK_windowTest.csproj",
         "projectName": "openTK_windowTest",
-        "projectPath": "C:\\Users\\wes\\github-repos\\cameraapp2\\cameraapp\\openTK_windowTest.csproj",
-        "packagesPath": "C:\\Users\\wes\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\wes\\github-repos\\cameraapp2\\cameraapp\\obj\\",
+        "projectPath": "C:\\Users\\Initec\\Documents\\Personal\\cameraapp\\openTK_windowTest.csproj",
+        "packagesPath": "C:\\Users\\Initec\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Initec\\Documents\\Personal\\cameraapp\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "D:\\Software\\VS\\SDK\\NuGetPackages"
+          "C:\\Microsoft\\Xamarin\\NuGet\\"
         ],
         "configFilePaths": [
-          "C:\\Users\\wes\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\Initec\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
@@ -44,6 +44,10 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "dependencies": {
+            "DirectShowLib.Standard": {
+              "target": "Package",
+              "version": "[2.1.0, )"
+            },
             "Emgu.CV": {
               "target": "Package",
               "version": "[4.7.0.5276, )"
@@ -89,7 +93,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.201\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.102\\RuntimeIdentifierGraph.json"
         }
       }
     }

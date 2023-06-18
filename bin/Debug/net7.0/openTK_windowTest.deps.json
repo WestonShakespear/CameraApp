@@ -8,6 +8,7 @@
     ".NETCoreApp,Version=v7.0": {
       "openTK_windowTest/1.0.0": {
         "dependencies": {
+          "DirectShowLib.Standard": "2.1.0",
           "Emgu.CV": "4.7.0.5276",
           "Emgu.CV.runtime.ubuntu-x64": "4.7.0.5276",
           "Emgu.CV.runtime.windows": "4.7.0.5276",
@@ -311,6 +312,14 @@
             "rid": "win-x86",
             "assetType": "native",
             "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "DirectShowLib.Standard/2.1.0": {
+        "runtime": {
+          "lib/netstandard2.0/DirectShowLib.dll": {
+            "assemblyVersion": "2.1.0.0",
+            "fileVersion": "2.1.0.0"
           }
         }
       },
@@ -887,6 +896,13 @@
       "sha512": "sha512-A3X+zyjAtvIQkpwCSS/F5fDOFRWeT+USIAK+DhGujNufF+qV1ty5cYGJihmmGeokX3yd89uZoNH8mcsmXCY/yw==",
       "path": "csfml/2.5.0",
       "hashPath": "csfml.2.5.0.nupkg.sha512"
+    },
+    "DirectShowLib.Standard/2.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-XACY5rMew2SQdPALsNaj6I3qHp9ZJ7STJhrc40x9JZXTyuLNpXte4f5nlG9yu8dez6ONJZf2ykGA2YoNT3/O/A==",
+      "path": "directshowlib.standard/2.1.0",
+      "hashPath": "directshowlib.standard.2.1.0.nupkg.sha512"
     },
     "Emgu.CV/4.7.0.5276": {
       "type": "package",

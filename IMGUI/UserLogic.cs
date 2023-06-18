@@ -1,11 +1,10 @@
 using shakespear.cameraapp.camera;
-using Emgu.CV;
+using shakespear.cameraapp.utilities;
 
+using Emgu.CV;
 using Emgu.CV.Util;
 using Emgu.CV.CvEnum;
-
 using Emgu.CV.Features2D;
-
 using Emgu.CV.Structure;
 using System.Drawing;
 
@@ -26,42 +25,67 @@ namespace shakespear.cameraapp.gui
 
         public static List<string[]> LogData = new List<string[]>();
 
+        public struct CameraParameters
+        {
+            public string[] camNames;
+            public string[] resolutionItems;
+
+            public string CurrentCam = "";
+            public string CurrentResolution = "640x480";
+            public string CurrentFPS = "30";
+
+            public bool CaptureLive = false;
+            public bool TrigConfigure = false;
+            public bool TrigReport = false;
+            public bool TrigSettings = false;
+            public bool TrigTrigger = false;
+
+            public CameraInput? Camera;
+            public Emgu.CV.Mat? CameraMat;
+            public byte[]? CameraImage;
+            public int CameraWidth = 0;
+            public int CameraHeight = 0;
+            
+
+            public CameraParameters()
+            {
+                camNames = new string[1];
+
+                resolutionItems = new string[1];
+            }
+        }
+
+        public static int TotalCameras = 0;
+
+        public static CameraParameters[] CameraParams = new CameraParameters[TotalCameras];
+
+        public static Utilities.CameraDetails[]? Details;
+
+        public static void CreateCameraParameters(Utilities.CameraDetails[] _details)
+        {
+            Details = new Utilities.CameraDetails[_details.Length];
+
+            string[] camNames = new string[_details.Length];
+
+            for (int i = 0; i < _details.Length; i++)
+            {
+                camNames[i] = _details[i].CatName();
+                Details[i] = _details[i];
+            }
+
+            for (int i = 0; i < TotalCameras; i++)
+            {
+                CameraParameters p = new CameraParameters();
+                p.camNames = camNames;
+                p.resolutionItems = resolutionItems;
+
+                CameraParams[i] = p;
+            }
+            Console.WriteLine(CameraParams[0].CaptureLive);
+        }
 
 
-        public static string[] camNames = {"video0", "video1", "video2"};
         public static string[] resolutionItems = {"640x480", "1280x720", "1920x1080"};
-
-        public static string[] CurrentCam = {"video0", "video0", "video0"};
-        public static string[] CurrentResolution = {"640x480", "640x480", "640x480"};
-        public static string[] CurrentFPS = {"30", "30", "30"};
-
-
-        public static bool[] CaptureLive = {true, true, false};
-        public static bool[] TrigConfigure = {false, false, false};
-        public static bool[] TrigReport = {false, false, false};
-        public static bool[] TrigSettings = {false, false, false};
-
-        public static bool[,] FilterStatus = {{false, false, false}, {false, false, false}, {false, false, false}};
-        public static int[,,] FilterSettings = { { {0, 0}, {5, 0}, {0, 0} },
-                                                 { {0, 0}, {5, 0}, {0, 0} },
-                                                 { {0, 0}, {5, 0}, {0, 0} } };
-
-        public static CameraInput? CameraOne;
-        public static CameraInput? CameraTwo;
-
-        public static byte[]? CameraOneImage;
-        public static byte[]? CameraTwoImage;
-        public static byte[]? OutputImage;
-
-        public static int CameraOneWidth = 0;
-        public static int CameraOneHeight = 0;
-        public static int CameraTwoWidth = 0;
-        public static int CameraTwoHeight = 0;
-
-
-        private static Emgu.CV.Mat? CameraOneMat;
-        private static Emgu.CV.Mat? CameraTwoMat;
-
 
         public static int Disparities = 0;
         public static int BlockSize = 5;
@@ -75,85 +99,67 @@ namespace shakespear.cameraapp.gui
             LogData.Add(new string[] {level, DateTime.Now.ToString("HH:mm:ss"), message});
         }
 
-        public static void Capture()
+
+            //     // CameraOne.UpdateFilterStatus(FilterStatus[0,0], FilterStatus[0,1], FilterStatus[0,2]);
+
+            //     // CameraOne.UpdateFilterSettings(FilterSettings[0,0,0],
+            //     //                                FilterSettings[0,0,1],
+            //     //                                FilterSettings[0,1,0],
+            //     //                                FilterSettings[0,1,1],
+            //     //                                FilterSettings[0,2,0],
+            //     //                                FilterSettings[0,2,1]);
+
+        public static void Capture(int _camera)
         {
-            if (CameraOne != null && CaptureLive[0])
+            if (CameraParams[_camera].CaptureLive || CameraParams[_camera].TrigTrigger)
             {
-                CameraOne.UpdateFilterStatus(FilterStatus[0,0], FilterStatus[0,1], FilterStatus[0,2]);
-
-                CameraOne.UpdateFilterSettings(FilterSettings[0,0,0],
-                                               FilterSettings[0,0,1],
-                                               FilterSettings[0,1,0],
-                                               FilterSettings[0,1,1],
-                                               FilterSettings[0,2,0],
-                                               FilterSettings[0,2,1]);
-                CameraOne.captureImage();
-
-                CameraOne.getImage(ref CameraOneMat, ref CameraOneImage, ref CameraOneWidth, ref CameraOneHeight);
-            } 
-
-            if (CameraTwo != null && CaptureLive[1])
-            {
-                CameraTwo.UpdateFilterStatus(FilterStatus[1,0], FilterStatus[1,1], FilterStatus[1,2]);
-
-                CameraTwo.UpdateFilterSettings(FilterSettings[1,0,0],
-                                               FilterSettings[1,0,1],
-                                               FilterSettings[1,1,0],
-                                               FilterSettings[1,1,1],
-                                               FilterSettings[1,2,0],
-                                               FilterSettings[1,2,1]);
-                CameraTwo.captureImage();
-
-                CameraTwo.getImage(ref CameraTwoMat, ref CameraTwoImage, ref CameraTwoWidth, ref CameraTwoHeight);
+                CameraParams[_camera].TrigTrigger = false;
+                CameraParams[_camera].Camera?.captureImage();
             }
+
+            CameraParams[_camera].Camera?.getImage(ref CameraParams[_camera].CameraMat,
+                                                   ref CameraParams[_camera].CameraImage,
+                                                   ref CameraParams[_camera].CameraWidth,
+                                                   ref CameraParams[_camera].CameraHeight);
         }
 
-        public static async void Update()
+        public static void UpdateCamera(int _camera)
         {
-            for (int camera = 0; camera < 2; camera++)
+            if (CameraParams[_camera].TrigConfigure)
             {
-                if (TrigConfigure[camera])
-            {
-                TrigConfigure[camera] = false;
+                CameraParams[_camera].TrigConfigure = false;
 
-                string newCamera = CurrentCam[camera];
-
-                string[] resolution = CurrentResolution[camera].Split("x");
-                
-                if (camera == 0 && CameraOne != null)
+                if (Details is not null)
                 {
-                    CameraOne.initCamera(
-                        Int32.Parse(CurrentFPS[camera]),
-                        Int32.Parse(resolution[0]),
-                        Int32.Parse(resolution[1]));  
-                }
+                    string[] resolution = CameraParams[_camera].CurrentResolution.Split("x");
+                    int resX = Int32.Parse(resolution[0]);
+                    int resY = Int32.Parse(resolution[1]);
+                    int fps = Int32.Parse(CameraParams[_camera].CurrentFPS);
 
-                else if (camera == 1 && CameraTwo != null)
-                {
-                    CameraTwo.initCamera(
-                        Int32.Parse(CurrentFPS[camera]),
-                        Int32.Parse(resolution[0]),
-                        Int32.Parse(resolution[1]));  
-                }
-                              
-            } 
-            
-            else if (TrigReport[camera])
-            {
-                TrigReport[camera] = false;
+                    int index = Utilities.IndexFromCatAndList(Details, CameraParams[_camera].CurrentCam);
 
-                if (CameraOne != null && camera == 0)
-                {
-                    string[] values = CameraOne.reportCamera();
-                    foreach (string value in values)
+                    if (CameraParams[_camera].Camera is null)
                     {
-                        Log("USER", value);
+                        CameraParams[_camera].Camera = new CameraInput(index);
                     }
-                }
 
-                if (CameraTwo != null && camera == 1)
+                    CameraParams[_camera].Camera?.initCamera(
+                        fps,
+                        resX,
+                        resY);
+                    
+                    
+                }
+                         
+            }
+
+            else if (CameraParams[_camera].TrigReport)
+            {
+                CameraParams[_camera].TrigReport = false;
+
+                string[]? values = CameraParams[_camera].Camera?.reportCamera();
+                if (values is not null)
                 {
-                    string[] values = CameraTwo.reportCamera();
                     foreach (string value in values)
                     {
                         Log("USER", value);
@@ -161,114 +167,118 @@ namespace shakespear.cameraapp.gui
                 }
             }
 
-            else if (TrigSettings[camera])
+            else if (CameraParams[_camera].TrigSettings)
             {
-                TrigSettings[camera] = false;
+                CameraParams[_camera].TrigSettings = false;
 
-                if (CameraOne != null && camera == 0)
-                {
-                    CameraOne.toggleSettings();
-                }
-                if (CameraTwo != null && camera == 1)
-                {
-                    CameraTwo.toggleSettings();
-                }
-            }
+                CameraParams[_camera].Camera?.toggleSettings();
             }
 
-
-            Capture();
-            
-            if (CameraOneMat != null && CameraTwoMat != null && CaptureLive[2])
-            {
-                Mat OutputMat = new Mat();
-
-                // int disp = (Disparities % 32) * 32;
-                // int block = BlockSize;
-                // if (block % 2 == 0)
-                // {
-                //     block -= 1;
-                // }
-
-                // StereoBM stereo = new StereoBM(disp, block);
-                
-                // stereo.Compute(CameraOneMat, CameraTwoMat, OutputMat);
-
-                // Mat show = new Mat();
-
-                // SIFT sift = new SIFT();
-
-                // VectorOfKeyPoint points1 = new VectorOfKeyPoint();
-                // VectorOfKeyPoint points2 = new VectorOfKeyPoint();
-
-                // Mat desc1 = new Mat();
-                // Mat desc2 = new Mat();
-                
-
-                // sift.DetectAndCompute(CameraOneMat, null, points1, desc1, false);
-                // sift.DetectAndCompute(CameraTwoMat, null, points2, desc2, false);
-                
-                // DistanceType dt = new DistanceType();
-
-                // BFMatcher bf = new BFMatcher(dt);
-
-                // VectorOfVectorOfDMatch matches = new VectorOfVectorOfDMatch();
-
-                // Features2D.DescriptorMatcher matcher = DescriptorMatcher();
-
-                
-                
-                // CameraOneMat.ConvertTo(show, DepthType.Cv8U);
-
-                // if (CameraOne != null)
-                // {
-                //     CameraOneImage = await CameraOne.TaskPoint(show, points1);
-                // }
-
-                // CameraTwoMat.ConvertTo(show, DepthType.Cv8U);
-
-                // if (CameraTwo != null)
-                // {
-                //     CameraTwoImage = await CameraTwo.TaskPoint(show, points2);
-                // }
-
-                // // CameraTwoMat.ConvertTo(show, DepthType.Cv8U);
-
-                // // Features2DToolbox.DrawMatches(CameraOneMat, points1, CameraTwoMat, points2, matches, show, new MCvScalar(0.5, 0, 0), new MCvScalar(0.5, 0, 0), null, Features2DToolbox.KeypointDrawType.Default);
-
-                // if (CameraTwo != null)
-                // {
-                //     OutputImage = await CameraTwo.TaskPoint(show, points2);
-                // }
-
-
-
-
-
-                // Mat OutputMat = new Mat();
-
-                int disp = (Disparities % 32) * 32;
-                int block = BlockSize;
-                if (block % 2 == 0)
-                {
-                    block -= 1;
-                }
-
-                StereoBM stereo = new StereoBM(disp, block);
-                
-                stereo.Compute(CameraOneMat, CameraTwoMat, OutputMat);
-
-                Mat show = new Mat();
-
-                OutputMat.ConvertTo(show, DepthType.Cv8U);
-
-                if (CameraOne != null)
-                {
-                    OutputImage = await CameraOne.TaskConvert(show);
-                }
-                
-            } 
+            Capture(_camera);
         }
+
+        public static void Update()
+        {
+            for (int i = 0; i < TotalCameras; i++)
+            {
+                UpdateCamera(i);
+            }
+        }
+
+
+
+            
+            
+        //     if (CameraOneMat != null && CameraTwoMat != null && CaptureLive[2])
+        //     {
+        //         Mat OutputMat = new Mat();
+
+        //         // int disp = (Disparities % 32) * 32;
+        //         // int block = BlockSize;
+        //         // if (block % 2 == 0)
+        //         // {
+        //         //     block -= 1;
+        //         // }
+
+        //         // StereoBM stereo = new StereoBM(disp, block);
+                
+        //         // stereo.Compute(CameraOneMat, CameraTwoMat, OutputMat);
+
+        //         // Mat show = new Mat();
+
+        //         // SIFT sift = new SIFT();
+
+        //         // VectorOfKeyPoint points1 = new VectorOfKeyPoint();
+        //         // VectorOfKeyPoint points2 = new VectorOfKeyPoint();
+
+        //         // Mat desc1 = new Mat();
+        //         // Mat desc2 = new Mat();
+                
+
+        //         // sift.DetectAndCompute(CameraOneMat, null, points1, desc1, false);
+        //         // sift.DetectAndCompute(CameraTwoMat, null, points2, desc2, false);
+                
+        //         // DistanceType dt = new DistanceType();
+
+        //         // BFMatcher bf = new BFMatcher(dt);
+
+        //         // VectorOfVectorOfDMatch matches = new VectorOfVectorOfDMatch();
+
+        //         // Features2D.DescriptorMatcher matcher = DescriptorMatcher();
+
+                
+                
+        //         // CameraOneMat.ConvertTo(show, DepthType.Cv8U);
+
+        //         // if (CameraOne != null)
+        //         // {
+        //         //     CameraOneImage = await CameraOne.TaskPoint(show, points1);
+        //         // }
+
+        //         // CameraTwoMat.ConvertTo(show, DepthType.Cv8U);
+
+        //         // if (CameraTwo != null)
+        //         // {
+        //         //     CameraTwoImage = await CameraTwo.TaskPoint(show, points2);
+        //         // }
+
+        //         // // CameraTwoMat.ConvertTo(show, DepthType.Cv8U);
+
+        //         // // Features2DToolbox.DrawMatches(CameraOneMat, points1, CameraTwoMat, points2, matches, show, new MCvScalar(0.5, 0, 0), new MCvScalar(0.5, 0, 0), null, Features2DToolbox.KeypointDrawType.Default);
+
+        //         // if (CameraTwo != null)
+        //         // {
+        //         //     OutputImage = await CameraTwo.TaskPoint(show, points2);
+        //         // }
+
+
+
+
+
+        //         // Mat OutputMat = new Mat();
+
+        //         int disp = (Disparities % 32) * 32;
+        //         int block = BlockSize;
+        //         if (block % 2 == 0)
+        //         {
+        //             block -= 1;
+        //         }
+
+        //         StereoBM stereo = new StereoBM(disp, block);
+                
+        //         stereo.Compute(CameraOneMat, CameraTwoMat, OutputMat);
+
+        //         Mat show = new Mat();
+
+        //         OutputMat.ConvertTo(show, DepthType.Cv8U);
+
+        //         if (CameraOne != null)
+        //         {
+        //             OutputImage = await CameraOne.TaskConvert(show);
+        //         }
+                
+        //     } 
+        // }
 
 
 

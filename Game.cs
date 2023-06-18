@@ -8,6 +8,7 @@ using ImGuiNET;
 
 using shakespear.cameraapp.gui;
 using shakespear.cameraapp.shadermanager;
+using shakespear.cameraapp.utilities;
 
 namespace shakespear.cameraapp {
     public class Window : GameWindow {
@@ -20,9 +21,9 @@ namespace shakespear.cameraapp {
         public ImGuiController UIController;
 
 
-        public ShaderManager shaderManager;
-        public ShaderManager shaderManager2;
-        public ShaderManager shaderManager3;
+        public ShaderManager[] shaderManagers;
+
+        public Utilities.CameraDetails[]? details;
         
 
 
@@ -43,6 +44,19 @@ namespace shakespear.cameraapp {
             })
 
         {
+            
+            UserLogic.TotalCameras = 3;
+            UserLogic.CameraParams = new UserLogic.CameraParameters[UserLogic.TotalCameras];
+            this.details = Utilities.GetCameras();
+
+            if (this.details is not null)
+            {
+                UserLogic.CreateCameraParameters(this.details);
+            }
+
+            // Environment.Exit(1);
+
+
             // Center the window
             this.CenterWindow();
             WindowHeight = Size.Y;
@@ -52,52 +66,43 @@ namespace shakespear.cameraapp {
 
             UIController = new ImGuiController((int)WindowWidth, (int)WindowHeight, fontPath, fontSize);
 
-            UserLogic.CameraOne = new camera.CameraInput(0);
-            UserLogic.CameraTwo = new camera.CameraInput(2);
+            // UserLogic.CameraOne = new camera.CameraInput(1);
+            // UserLogic.CameraTwo = new camera.CameraInput(2);
 
-            this.shaderManager = new ShaderManager(TextureUnit.Texture0, CameraWidth, CameraHeight, @"noSignal.jpg");
-            this.shaderManager2 = new ShaderManager(TextureUnit.Texture0, CameraWidth, CameraHeight, @"noSignal2.jpg");
-            this.shaderManager3 = new ShaderManager(TextureUnit.Texture0, CameraWidth, CameraHeight, @"noSignal3.jpg");
-            
+            string[] paths = {@"noSignal.jpg", @"noSignal2.jpg", @"noSignal3.jpg"};
+
+            this.shaderManagers = new ShaderManager[UserLogic.TotalCameras];
+
+            for (int i = 0; i < UserLogic.TotalCameras; i++)
+            {
+                this.shaderManagers[i] = new ShaderManager(TextureUnit.Texture0, CameraWidth, CameraHeight, paths[i]);
+            }       
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
-            UserLogic.Update();
-
-            if (UserLogic.CameraOneImage != null)
-            {
-                this.shaderManager.UpdateTextureMemory(UserLogic.CameraOneImage, UserLogic.CameraOneWidth, UserLogic.CameraOneHeight);
-            }
-            this.shaderManager.RenderFrame();
-
-
-            if (UserLogic.CameraTwoImage != null)
-            {
-                this.shaderManager2.UpdateTextureMemory(UserLogic.CameraTwoImage, UserLogic.CameraTwoWidth, UserLogic.CameraTwoHeight);
-            }
-            this.shaderManager2.RenderFrame();
-
-            if (UserLogic.OutputImage != null)
-            {
-                this.shaderManager3.UpdateTextureMemory(UserLogic.OutputImage, UserLogic.CameraTwoWidth, UserLogic.CameraTwoHeight);
-            }
-            this.shaderManager3.RenderFrame();
-            
-
-            
-
             UIController.Update(this, (float)args.Time);
             ImGui.DockSpaceOverViewport();
             GUI.WindowOnOffs();
 
-            int FBOutput1 = this.shaderManager.FramebufferTexture;
-            int FBOutput2 = this.shaderManager2.FramebufferTexture;
-            int FBOutput3 = this.shaderManager3.FramebufferTexture;
 
-            GUI.CameraOneWindow(ref CameraWidth, ref CameraHeight, ref FBOutput1);
-            GUI.CameraTwoWindow(ref CameraWidth, ref CameraHeight, ref FBOutput2);
-            GUI.CameraThreeWindow(ref CameraWidth, ref CameraHeight, ref FBOutput3);
+
+            UserLogic.Update();
+
+            for (int camera = 0; camera < UserLogic.TotalCameras; camera++)
+            {
+                if (UserLogic.CameraParams[camera].CameraImage != null)
+                {
+                    this.shaderManagers[camera].UpdateTextureMemory(UserLogic.CameraParams[camera].CameraImage,
+                                                                    UserLogic.CameraParams[camera].CameraWidth,
+                                                                    UserLogic.CameraParams[camera].CameraHeight);
+                }
+
+                this.shaderManagers[camera].RenderFrame();
+                int FBOutput = this.shaderManagers[camera].FramebufferTexture;
+
+                GUI.CameraOneWindow("Camera " + (camera+1), ref CameraWidth, ref CameraHeight, ref FBOutput);
+            }
 
             UIController.Render();
             ImGuiController.CheckGLError("End of frame");
@@ -123,10 +128,11 @@ namespace shakespear.cameraapp {
         {
             WindowWidth = e.Width;
             WindowHeight = e.Height;
-            
-            this.shaderManager.GenFBO();
-            this.shaderManager2.GenFBO();
-            this.shaderManager3.GenFBO();
+
+            foreach (ShaderManager sm in this.shaderManagers)
+            {
+                sm.GenFBO();
+            }
 
             UIController.WindowResized((int)WindowWidth, (int)WindowHeight);
 
@@ -139,24 +145,29 @@ namespace shakespear.cameraapp {
             this.VSync = VSyncMode.On;
             this.IsVisible = true;
 
-            this.shaderManager.GenFBO();
-            this.shaderManager2.GenFBO();
-            this.shaderManager3.GenFBO();
+            foreach (ShaderManager sm in this.shaderManagers)
+            {
+                sm.GenFBO();
+            }
             
             base.OnLoad();
         }
 
         protected override void OnUnload()
         {
-            this.shaderManager.Dispose();
-            this.shaderManager2.Dispose();
-            this.shaderManager3.Dispose();
 
-            UserLogic.CameraOne?.destroy();
-            UserLogic.CameraTwo?.destroy();
-            
+            foreach (ShaderManager sm in this.shaderManagers)
+            {
+                sm.Dispose();
+            }
+
+            for (int camera = 0; camera < UserLogic.TotalCameras; camera++)
+            {
+                UserLogic.CameraParams[camera].Camera?.destroy();
+            }
 
             base.OnUnload();
         } 
     }
 }
+

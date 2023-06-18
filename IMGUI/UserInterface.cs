@@ -21,9 +21,16 @@ namespace shakespear.cameraapp.gui
         {
             ImGui.Begin("Control");
 
-            ImGui.Dummy(new System.Numerics.Vector2(0f, UserLogic.spacing * 30));
-            ImGui.Text("Control");
-            ImGui.Separator();
+            for (int camera = 0; camera < UserLogic.TotalCameras; camera++)
+            {
+                ImGui.Dummy(new System.Numerics.Vector2(0f, UserLogic.spacing * 30));
+                if(ImGui.Button("Camera " + (camera+1) + " Trigger"))
+                {
+                    UserLogic.CameraParams[camera].TrigTrigger = true;
+                }
+                // CreateFilter(camera);
+            }
+
             ImGui.Dummy(new System.Numerics.Vector2(0f, UserLogic.spacing * 10));
             
             ImGui.SliderInt("Disparities", ref UserLogic.Disparities, 0, 255);
@@ -39,78 +46,42 @@ namespace shakespear.cameraapp.gui
         {
             ImGui.Begin("Filters");
 
-            for (int camera = 0; camera < UserLogic.CaptureLive.Length; camera++)
+            for (int camera = 0; camera < UserLogic.TotalCameras; camera++)
             {
                 ImGui.Dummy(new System.Numerics.Vector2(0f, UserLogic.spacing * 30));
                 ImGui.Text("Camera " + (camera+1));
                 ImGui.Separator();
                 ImGui.Dummy(new System.Numerics.Vector2(0f, UserLogic.spacing * 10));
-                CreateFilter(camera);
+                // CreateFilter(camera);
             }
 
             ImGui.Separator();
             ImGui.End();
         }
 
-        private static void CreateFilter(int _camera)
+        // private static void CreateFilter(int _camera)
+        // {
+        //     ImGui.Checkbox("Canny " + (_camera+1), ref UserLogic.FilterStatus[_camera,0]);
+        //     ImGui.SliderInt("A " + (_camera+1), ref UserLogic.FilterSettings[_camera,0,0], 0, 255);
+        //     ImGui.SliderInt("B " + (_camera+1), ref UserLogic.FilterSettings[_camera,0,1], 0, 255);
+        //     ImGui.Dummy(new System.Numerics.Vector2(0f, UserLogic.spacing * 10));
+
+        //     ImGui.Checkbox("Guassian " + (_camera+1), ref UserLogic.FilterStatus[_camera,1]);
+        //     ImGui.SliderInt("Size " + (_camera+1), ref UserLogic.FilterSettings[_camera,1,0], 1, 255);
+        //     ImGui.SliderInt("Sigma " + (_camera+1), ref UserLogic.FilterSettings[_camera,1,1], 0, 255);
+        //     ImGui.Dummy(new System.Numerics.Vector2(0f, UserLogic.spacing * 10));
+
+        //     ImGui.Checkbox("Threshold " + (_camera+1), ref UserLogic.FilterStatus[_camera,2]);
+        //     ImGui.SliderInt("Min " + (_camera+1), ref UserLogic.FilterSettings[_camera,2,0], 0, 255);
+        //     ImGui.SliderInt("Set " + (_camera+1), ref UserLogic.FilterSettings[_camera,2,1], 0, 255);
+
+        //     ImGui.Separator();
+        // }
+
+
+        public static void CameraOneWindow(string name, ref float CameraWidth, ref float CameraHeight, ref int framebufferTexture)
         {
-            ImGui.Checkbox("Canny " + (_camera+1), ref UserLogic.FilterStatus[_camera,0]);
-            ImGui.SliderInt("A " + (_camera+1), ref UserLogic.FilterSettings[_camera,0,0], 0, 255);
-            ImGui.SliderInt("B " + (_camera+1), ref UserLogic.FilterSettings[_camera,0,1], 0, 255);
-            ImGui.Dummy(new System.Numerics.Vector2(0f, UserLogic.spacing * 10));
-
-            ImGui.Checkbox("Guassian " + (_camera+1), ref UserLogic.FilterStatus[_camera,1]);
-            ImGui.SliderInt("Size " + (_camera+1), ref UserLogic.FilterSettings[_camera,1,0], 1, 255);
-            ImGui.SliderInt("Sigma " + (_camera+1), ref UserLogic.FilterSettings[_camera,1,1], 0, 255);
-            ImGui.Dummy(new System.Numerics.Vector2(0f, UserLogic.spacing * 10));
-
-            ImGui.Checkbox("Threshold " + (_camera+1), ref UserLogic.FilterStatus[_camera,2]);
-            ImGui.SliderInt("Min " + (_camera+1), ref UserLogic.FilterSettings[_camera,2,0], 0, 255);
-            ImGui.SliderInt("Set " + (_camera+1), ref UserLogic.FilterSettings[_camera,2,1], 0, 255);
-
-            ImGui.Separator();
-        }
-
-
-        public static void CameraOneWindow(ref float CameraWidth, ref float CameraHeight, ref int framebufferTexture)
-        {
-            ImGui.Begin("Camera One");
-
-            CameraWidth = ImGui.GetWindowWidth();
-            CameraHeight = ImGui.GetWindowHeight() - ImGui.GetIO().FontGlobalScale * 71;
-
-            //isMainHovered = ImGui.IsWindowHovered();
-
-            ImGui.Image((IntPtr)framebufferTexture,
-                new System.Numerics.Vector2(CameraWidth, CameraHeight),
-                new System.Numerics.Vector2(0, 0.95f),
-                new System.Numerics.Vector2(1, 0),
-                new System.Numerics.Vector4(1.0f),
-                new System.Numerics.Vector4(1, 1, 1, 0.2f));
-            ImGui.End();
-        }
-
-        public static void CameraTwoWindow(ref float CameraWidth, ref float CameraHeight, ref int framebufferTexture)
-        {
-            ImGui.Begin("Camera Two");
-
-            CameraWidth = ImGui.GetWindowWidth();
-            CameraHeight = ImGui.GetWindowHeight() - ImGui.GetIO().FontGlobalScale * 71;
-
-            //isMainHovered = ImGui.IsWindowHovered();
-
-            ImGui.Image((IntPtr)framebufferTexture,
-                new System.Numerics.Vector2(CameraWidth, CameraHeight),
-                new System.Numerics.Vector2(0, 0.95f),
-                new System.Numerics.Vector2(1, 0),
-                new System.Numerics.Vector4(1.0f),
-                new System.Numerics.Vector4(1, 1, 1, 0.2f));
-            ImGui.End();
-        }
-
-        public static void CameraThreeWindow(ref float CameraWidth, ref float CameraHeight, ref int framebufferTexture)
-        {
-            ImGui.Begin("Camera Three");
+            ImGui.Begin(name);
 
             CameraWidth = ImGui.GetWindowWidth();
             CameraHeight = ImGui.GetWindowHeight() - ImGui.GetIO().FontGlobalScale * 71;
@@ -259,17 +230,22 @@ namespace shakespear.cameraapp.gui
 
         private static void CreateCameraSettings(int _camera)
         {
-            ImGui.Checkbox("Capture " + (_camera+1), ref UserLogic.CaptureLive[_camera]);
+            ImGui.Checkbox("Capture " + (_camera+1), ref UserLogic.CameraParams[_camera].CaptureLive);
 
             ImGui.Separator();
 
             if (ImGui.Button("Report Config " + (_camera+1)))
             {
-                UserLogic.TrigReport[_camera] = true;
+                UserLogic.CameraParams[_camera].TrigReport = true;
             }
             
-            createBasicDropdown("Camera " + (_camera+1), UserLogic.camNames, ref UserLogic.CurrentCam[_camera]);
-            createBasicDropdown("Resolution " + (_camera+1), UserLogic.resolutionItems, ref UserLogic.CurrentResolution[_camera]);
+            createBasicDropdown("Camera " + (_camera+1),
+                                UserLogic.CameraParams[_camera].camNames,
+                                ref UserLogic.CameraParams[_camera].CurrentCam);
+
+            createBasicDropdown("Resolution " + (_camera+1),
+                                UserLogic.CameraParams[_camera].resolutionItems,
+                                ref UserLogic.CameraParams[_camera].CurrentResolution);
 
             Dictionary<string, string[]> fpsItems = new Dictionary<string, string[]>();
 
@@ -283,19 +259,21 @@ namespace shakespear.cameraapp.gui
             //fpsItems.Add("1920x1200", mFPS);
             fpsItems.Add("1920x1080", mFPS);
             
-            createBasicDropdown("FPS " +  (_camera+1), fpsItems[UserLogic.CurrentResolution[_camera]], ref UserLogic.CurrentFPS[_camera]);
+            createBasicDropdown("FPS " +  (_camera+1),
+                                fpsItems[UserLogic.CameraParams[_camera].CurrentResolution],
+                                ref UserLogic.CameraParams[_camera].CurrentFPS);
             
 
             if (ImGui.Button("Configure " + (_camera+1)))
             {
-                UserLogic.TrigConfigure[_camera] = true;
+                UserLogic.CameraParams[_camera].TrigConfigure = true;
             }
 
             ImGui.Separator();
 
             if (ImGui.Button("Toggle Settings " + (_camera+1)))
             {
-                UserLogic.TrigSettings[_camera] = true;
+                UserLogic.CameraParams[_camera].TrigSettings = true;
             }
         }
 
@@ -305,7 +283,7 @@ namespace shakespear.cameraapp.gui
         {
             ImGui.Begin("Camera Settings");
 
-            for (int camera = 0; camera < UserLogic.CaptureLive.Length; camera++)
+            for (int camera = 0; camera < UserLogic.TotalCameras; camera++)
             {
                 ImGui.Dummy(new System.Numerics.Vector2(0f, UserLogic.spacing * 30));
                 ImGui.Text("Camera " + (camera+1));

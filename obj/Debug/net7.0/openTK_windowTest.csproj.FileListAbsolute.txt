@@ -1039,3 +1039,4 @@ C:\Users\Initec\Documents\Personal\cameraapp\obj\Debug\net7.0\refint\openTK_wind
 C:\Users\Initec\Documents\Personal\cameraapp\obj\Debug\net7.0\openTK_windowTest.pdb
 C:\Users\Initec\Documents\Personal\cameraapp\obj\Debug\net7.0\openTK_windowTest.genruntimeconfig.cache
 C:\Users\Initec\Documents\Personal\cameraapp\obj\Debug\net7.0\ref\openTK_windowTest.dll
+C:\Users\Initec\Documents\Personal\cameraapp\bin\Debug\net7.0\DirectShowLib.dll

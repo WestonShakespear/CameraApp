@@ -239,6 +239,19 @@
           }
         }
       },
+      "DirectShowLib.Standard/2.1.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/DirectShowLib.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/DirectShowLib.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Emgu.CV/4.7.0.5276": {
         "type": "package",
         "dependencies": {
@@ -1073,6 +1086,22 @@
         "runtimes/win-x86/native/csfml-System.dll",
         "runtimes/win-x86/native/csfml-Window.dll",
         "runtimes/win-x86/native/openal32.dll"
+      ]
+    },
+    "DirectShowLib.Standard/2.1.0": {
+      "sha512": "XACY5rMew2SQdPALsNaj6I3qHp9ZJ7STJhrc40x9JZXTyuLNpXte4f5nlG9yu8dez6ONJZf2ykGA2YoNT3/O/A==",
+      "type": "package",
+      "path": "directshowlib.standard/2.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "directshowlib.standard.2.1.0.nupkg.sha512",
+        "directshowlib.standard.nuspec",
+        "lib/net45/DirectShowLib.dll",
+        "lib/net45/DirectShowLib.xml",
+        "lib/netstandard2.0/DirectShowLib.dll",
+        "lib/netstandard2.0/DirectShowLib.xml"
       ]
     },
     "Emgu.CV/4.7.0.5276": {
@@ -2581,6 +2610,7 @@
   },
   "projectFileDependencyGroups": {
     "net7.0": [
+      "DirectShowLib.Standard >= 2.1.0",
       "Emgu.CV >= 4.7.0.5276",
       "Emgu.CV.runtime.ubuntu-x64 >= 4.7.0.5276",
       "Emgu.CV.runtime.windows >= 4.7.0.5276",
@@ -2591,25 +2621,25 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\wes\\.nuget\\packages\\": {},
-    "D:\\Software\\VS\\SDK\\NuGetPackages": {}
+    "C:\\Users\\Initec\\.nuget\\packages\\": {},
+    "C:\\Microsoft\\Xamarin\\NuGet\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\wes\\github-repos\\cameraapp2\\cameraapp\\openTK_windowTest.csproj",
+      "projectUniqueName": "C:\\Users\\Initec\\Documents\\Personal\\cameraapp\\openTK_windowTest.csproj",
       "projectName": "openTK_windowTest",
-      "projectPath": "C:\\Users\\wes\\github-repos\\cameraapp2\\cameraapp\\openTK_windowTest.csproj",
-      "packagesPath": "C:\\Users\\wes\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\wes\\github-repos\\cameraapp2\\cameraapp\\obj\\",
+      "projectPath": "C:\\Users\\Initec\\Documents\\Personal\\cameraapp\\openTK_windowTest.csproj",
+      "packagesPath": "C:\\Users\\Initec\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Initec\\Documents\\Personal\\cameraapp\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "D:\\Software\\VS\\SDK\\NuGetPackages"
+        "C:\\Microsoft\\Xamarin\\NuGet\\"
       ],
       "configFilePaths": [
-        "C:\\Users\\wes\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\Initec\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
@@ -2634,6 +2664,10 @@
       "net7.0": {
         "targetAlias": "net7.0",
         "dependencies": {
+          "DirectShowLib.Standard": {
+            "target": "Package",
+            "version": "[2.1.0, )"
+          },
           "Emgu.CV": {
             "target": "Package",
             "version": "[4.7.0.5276, )"
@@ -2679,7 +2713,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.201\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.102\\RuntimeIdentifierGraph.json"
       }
     }
   }
