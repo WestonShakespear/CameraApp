@@ -5,6 +5,7 @@ using Emgu.CV.CvEnum;
 using System.Drawing;
 using System.Diagnostics;
 using StbImageSharp;
+using Emgu.CV.Structure;
 
 namespace shakespear.cameraapp.camera
 {
@@ -141,6 +142,19 @@ namespace shakespear.cameraapp.camera
             return await Task.Run(() => ImageResult.FromMemory(buffer.ToArray(), ColorComponents.RedGreenBlueAlpha).Data);
         }
 
+        public Task<byte[]> TaskPoint(Mat image, VectorOfKeyPoint keys)
+        {
+            foreach (MKeyPoint data in keys.ToArray())
+            {
+                int x = (int)data.Point.X;
+                int y = (int)data.Point.Y;
+
+                CvInvoke.Circle(image, new Point(x, y), 5, new MCvScalar(0.5, 0.0, 0.0), 10);
+            }
+
+            return this.TaskConvert(image);
+        }
+
         public void captureComplete(Mat imageMat, byte[] image0)
         {
             this.currentRawImage = image0;
@@ -153,6 +167,8 @@ namespace shakespear.cameraapp.camera
         {
             Mat imgOutput = new Mat(image.Size, DepthType.Cv8U, 1);
             Mat imgTemp = new Mat(image.Size, DepthType.Cv8U, 1);
+
+            
 
             CvInvoke.CvtColor(image, imgOutput, ColorConversion.Bgr2Gray);
 

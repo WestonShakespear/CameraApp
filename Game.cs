@@ -25,6 +25,7 @@ namespace shakespear.cameraapp {
         public ShaderManager shaderManager3;
         
 
+
         
 
         public Window(int width, int height, string title, string fontPath, float fontSize)
@@ -51,7 +52,7 @@ namespace shakespear.cameraapp {
 
             UIController = new ImGuiController((int)WindowWidth, (int)WindowHeight, fontPath, fontSize);
 
-            UserLogic.CameraOne = new camera.CameraInput(1);
+            UserLogic.CameraOne = new camera.CameraInput(0);
             UserLogic.CameraTwo = new camera.CameraInput(2);
 
             this.shaderManager = new ShaderManager(TextureUnit.Texture0, CameraWidth, CameraHeight, @"noSignal.jpg");

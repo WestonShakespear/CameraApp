@@ -4,6 +4,11 @@ using Emgu.CV;
 using Emgu.CV.Util;
 using Emgu.CV.CvEnum;
 
+using Emgu.CV.Features2D;
+
+using Emgu.CV.Structure;
+using System.Drawing;
+
 namespace shakespear.cameraapp.gui
 {
     public static class UserLogic
@@ -31,7 +36,7 @@ namespace shakespear.cameraapp.gui
         public static string[] CurrentFPS = {"30", "30", "30"};
 
 
-        public static bool[] CaptureLive = {true, true, true};
+        public static bool[] CaptureLive = {true, true, false};
         public static bool[] TrigConfigure = {false, false, false};
         public static bool[] TrigReport = {false, false, false};
         public static bool[] TrigSettings = {false, false, false};
@@ -115,9 +120,17 @@ namespace shakespear.cameraapp.gui
 
                 string[] resolution = CurrentResolution[camera].Split("x");
                 
-                if (CameraOne != null)
+                if (camera == 0 && CameraOne != null)
                 {
                     CameraOne.initCamera(
+                        Int32.Parse(CurrentFPS[camera]),
+                        Int32.Parse(resolution[0]),
+                        Int32.Parse(resolution[1]));  
+                }
+
+                else if (camera == 1 && CameraTwo != null)
+                {
+                    CameraTwo.initCamera(
                         Int32.Parse(CurrentFPS[camera]),
                         Int32.Parse(resolution[0]),
                         Int32.Parse(resolution[1]));  
@@ -129,9 +142,18 @@ namespace shakespear.cameraapp.gui
             {
                 TrigReport[camera] = false;
 
-                if (CameraOne != null)
+                if (CameraOne != null && camera == 0)
                 {
                     string[] values = CameraOne.reportCamera();
+                    foreach (string value in values)
+                    {
+                        Log("USER", value);
+                    }
+                }
+
+                if (CameraTwo != null && camera == 1)
+                {
+                    string[] values = CameraTwo.reportCamera();
                     foreach (string value in values)
                     {
                         Log("USER", value);
@@ -143,18 +165,87 @@ namespace shakespear.cameraapp.gui
             {
                 TrigSettings[camera] = false;
 
-                if (CameraOne != null)
+                if (CameraOne != null && camera == 0)
                 {
                     CameraOne.toggleSettings();
+                }
+                if (CameraTwo != null && camera == 1)
+                {
+                    CameraTwo.toggleSettings();
                 }
             }
             }
 
 
             Capture();
-            if (CameraOneMat != null && CameraTwoMat != null)
+            
+            if (CameraOneMat != null && CameraTwoMat != null && CaptureLive[2])
             {
                 Mat OutputMat = new Mat();
+
+                // int disp = (Disparities % 32) * 32;
+                // int block = BlockSize;
+                // if (block % 2 == 0)
+                // {
+                //     block -= 1;
+                // }
+
+                // StereoBM stereo = new StereoBM(disp, block);
+                
+                // stereo.Compute(CameraOneMat, CameraTwoMat, OutputMat);
+
+                // Mat show = new Mat();
+
+                // SIFT sift = new SIFT();
+
+                // VectorOfKeyPoint points1 = new VectorOfKeyPoint();
+                // VectorOfKeyPoint points2 = new VectorOfKeyPoint();
+
+                // Mat desc1 = new Mat();
+                // Mat desc2 = new Mat();
+                
+
+                // sift.DetectAndCompute(CameraOneMat, null, points1, desc1, false);
+                // sift.DetectAndCompute(CameraTwoMat, null, points2, desc2, false);
+                
+                // DistanceType dt = new DistanceType();
+
+                // BFMatcher bf = new BFMatcher(dt);
+
+                // VectorOfVectorOfDMatch matches = new VectorOfVectorOfDMatch();
+
+                // Features2D.DescriptorMatcher matcher = DescriptorMatcher();
+
+                
+                
+                // CameraOneMat.ConvertTo(show, DepthType.Cv8U);
+
+                // if (CameraOne != null)
+                // {
+                //     CameraOneImage = await CameraOne.TaskPoint(show, points1);
+                // }
+
+                // CameraTwoMat.ConvertTo(show, DepthType.Cv8U);
+
+                // if (CameraTwo != null)
+                // {
+                //     CameraTwoImage = await CameraTwo.TaskPoint(show, points2);
+                // }
+
+                // // CameraTwoMat.ConvertTo(show, DepthType.Cv8U);
+
+                // // Features2DToolbox.DrawMatches(CameraOneMat, points1, CameraTwoMat, points2, matches, show, new MCvScalar(0.5, 0, 0), new MCvScalar(0.5, 0, 0), null, Features2DToolbox.KeypointDrawType.Default);
+
+                // if (CameraTwo != null)
+                // {
+                //     OutputImage = await CameraTwo.TaskPoint(show, points2);
+                // }
+
+
+
+
+
+                // Mat OutputMat = new Mat();
 
                 int disp = (Disparities % 32) * 32;
                 int block = BlockSize;
@@ -176,10 +267,10 @@ namespace shakespear.cameraapp.gui
                     OutputImage = await CameraOne.TaskConvert(show);
                 }
                 
-            }
-            
-
-            
+            } 
         }
+
+
+
     }
 }
