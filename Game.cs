@@ -21,7 +21,8 @@ namespace shakespear.cameraapp {
         public ImGuiController UIController;
 
 
-        public ShaderManager[] shaderManagers;
+        public ShaderManager[] shaderCameraManagers;
+        public ShaderManager[] shaderOutputManagers;
 
         public Utilities.CameraDetails[]? details;
         
@@ -45,13 +46,15 @@ namespace shakespear.cameraapp {
 
         {
             
-            UserLogic.TotalCameras = 3;
+            UserLogic.TotalCameras = 2;
+            UserLogic.TotalOutputs = 3;
+
             UserLogic.CameraParams = new UserLogic.CameraParameters[UserLogic.TotalCameras];
             this.details = Utilities.GetCameras();
 
             if (this.details is not null)
             {
-                UserLogic.CreateCameraParameters(this.details);
+                UserLogic.CreateParameters(this.details);
             }
 
             // Environment.Exit(1);
@@ -69,14 +72,7 @@ namespace shakespear.cameraapp {
             // UserLogic.CameraOne = new camera.CameraInput(1);
             // UserLogic.CameraTwo = new camera.CameraInput(2);
 
-            string[] paths = {@"noSignal.jpg", @"noSignal2.jpg", @"noSignal3.jpg"};
-
-            this.shaderManagers = new ShaderManager[UserLogic.TotalCameras];
-
-            for (int i = 0; i < UserLogic.TotalCameras; i++)
-            {
-                this.shaderManagers[i] = new ShaderManager(TextureUnit.Texture0, CameraWidth, CameraHeight, paths[i]);
-            }       
+                   
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
@@ -85,24 +81,13 @@ namespace shakespear.cameraapp {
             ImGui.DockSpaceOverViewport();
             GUI.WindowOnOffs();
 
-
-
             UserLogic.Update();
 
-            for (int camera = 0; camera < UserLogic.TotalCameras; camera++)
-            {
-                if (UserLogic.CameraParams[camera].CameraImage != null)
-                {
-                    this.shaderManagers[camera].UpdateTextureMemory(UserLogic.CameraParams[camera].CameraImage,
-                                                                    UserLogic.CameraParams[camera].CameraWidth,
-                                                                    UserLogic.CameraParams[camera].CameraHeight);
-                }
+            
+            
 
-                this.shaderManagers[camera].RenderFrame();
-                int FBOutput = this.shaderManagers[camera].FramebufferTexture;
-
-                GUI.CameraOneWindow("Camera " + (camera+1), ref CameraWidth, ref CameraHeight, ref FBOutput);
-            }
+            this.RenderShaderManagers("Camera", ref shaderCameraManagers, UserLogic.CameraParams);
+            this.RenderShaderManagers("Output", ref shaderOutputManagers, UserLogic.OutputParams);
 
             UIController.Render();
             ImGuiController.CheckGLError("End of frame");
@@ -129,10 +114,8 @@ namespace shakespear.cameraapp {
             WindowWidth = e.Width;
             WindowHeight = e.Height;
 
-            foreach (ShaderManager sm in this.shaderManagers)
-            {
-                sm.GenFBO();
-            }
+            this.ReloadShaderManagers(ref this.shaderCameraManagers);
+            this.ReloadShaderManagers(ref this.shaderOutputManagers);
 
             UIController.WindowResized((int)WindowWidth, (int)WindowHeight);
 
@@ -142,24 +125,21 @@ namespace shakespear.cameraapp {
 
         protected override void OnLoad()
         {
+            GUI.LoadTheme();
+            
             this.VSync = VSyncMode.On;
             this.IsVisible = true;
 
-            foreach (ShaderManager sm in this.shaderManagers)
-            {
-                sm.GenFBO();
-            }
+            this.LoadShaderManagers(UserLogic.TotalCameras, ref this.shaderCameraManagers);
+            this.LoadShaderManagers(UserLogic.TotalOutputs, ref this.shaderOutputManagers);
             
             base.OnLoad();
         }
 
         protected override void OnUnload()
         {
-
-            foreach (ShaderManager sm in this.shaderManagers)
-            {
-                sm.Dispose();
-            }
+            this.UnloadShaderManagers(ref this.shaderCameraManagers);
+            this.UnloadShaderManagers(ref this.shaderOutputManagers);
 
             for (int camera = 0; camera < UserLogic.TotalCameras; camera++)
             {
@@ -167,7 +147,56 @@ namespace shakespear.cameraapp {
             }
 
             base.OnUnload();
-        } 
+        }
+
+        private void LoadShaderManagers(int length, ref ShaderManager[] managers)
+        {
+
+
+            managers = new ShaderManager[length];
+
+            for (int i = 0; i < length; i++)
+            {
+                managers[i] = new ShaderManager(TextureUnit.Texture0, CameraWidth, CameraHeight, @"noSignal.jpg");
+                managers[i].GenFBO();
+            }
+        }
+
+        private void ReloadShaderManagers(ref ShaderManager[] managers)
+        {
+            for (int i = 0; i < managers.Length; i++)
+            {
+                managers[i].GenFBO();
+            }
+        }
+
+        private void RenderShaderManagers(string prefix, ref ShaderManager[] managers, UserLogic.CameraParameters[] parameters)
+        {
+            for (int manager = 0; manager < managers.Length; manager++)
+            {
+                byte[]? image = parameters[manager].CameraImage;
+
+                if (image is not null)
+                {
+                    managers[manager].UpdateTextureMemory(image,
+                                                          parameters[manager].CameraWidth,
+                                                          parameters[manager].CameraHeight);
+                }
+
+                managers[manager].RenderFrame();
+                int FBOutput = managers[manager].FramebufferTexture;
+
+                GUI.CameraOneWindow(prefix + " " + (manager+1), ref CameraWidth, ref CameraHeight, ref FBOutput);
+            }
+        }
+
+        private void UnloadShaderManagers(ref ShaderManager[] managers)
+        {
+            foreach (ShaderManager sm in managers)
+            {
+                sm.Dispose();
+            }
+        }
     }
 }
 

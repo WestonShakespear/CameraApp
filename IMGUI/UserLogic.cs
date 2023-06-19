@@ -34,11 +34,12 @@ namespace shakespear.cameraapp.gui
             public string CurrentResolution = "640x480";
             public string CurrentFPS = "30";
 
-            public bool CaptureLive = false;
+            public bool CaptureLive = true;
             public bool TrigConfigure = false;
             public bool TrigReport = false;
             public bool TrigSettings = false;
             public bool TrigTrigger = false;
+            public bool TrigSave = false;
 
             public CameraInput? Camera;
             public Emgu.CV.Mat? CameraMat;
@@ -56,13 +57,18 @@ namespace shakespear.cameraapp.gui
         }
 
         public static int TotalCameras = 0;
+        public static int TotalOutputs = 0;
 
         public static CameraParameters[] CameraParams = new CameraParameters[TotalCameras];
+        public static CameraParameters[] OutputParams = new CameraParameters[TotalOutputs];
 
         public static Utilities.CameraDetails[]? Details;
 
-        public static void CreateCameraParameters(Utilities.CameraDetails[] _details)
+        public static void CreateParameters(Utilities.CameraDetails[] _details)
         {
+            CameraParams = new CameraParameters[TotalCameras];
+            OutputParams = new CameraParameters[TotalOutputs];
+
             Details = new Utilities.CameraDetails[_details.Length];
 
             string[] camNames = new string[_details.Length];
@@ -79,9 +85,16 @@ namespace shakespear.cameraapp.gui
                 p.camNames = camNames;
                 p.resolutionItems = resolutionItems;
 
+                p.CurrentResolution = "640x480";
+                p.CurrentFPS = "30";
+
                 CameraParams[i] = p;
             }
-            Console.WriteLine(CameraParams[0].CaptureLive);
+
+            for (int i = 0; i < TotalOutputs; i++)
+            {
+                OutputParams[i] = new CameraParameters();
+            }
         }
 
 
@@ -174,15 +187,128 @@ namespace shakespear.cameraapp.gui
                 CameraParams[_camera].Camera?.toggleSettings();
             }
 
+            else if (CameraParams[_camera].TrigSave)
+            {
+                CameraParams[_camera].TrigSave = false;
+
+                string now = DateTime.Now.ToString("dddd, dd MMMM yyyy HH_mm_ss");
+
+                string filename = string.Format("images/Camera {0}  {1}.jpg",_camera.ToString(), now);
+
+                CvInvoke.Imwrite(filename, CameraParams[_camera].CameraMat);
+            }
+
             Capture(_camera);
         }
 
-        public static void Update()
+        public static async void Generate(int _output)
+        {
+            
+            Mat show = new Mat();
+
+            if (_output < TotalCameras)
+            {
+
+                if (CameraParams[_output].CameraMat is not null)
+                {
+                    OutputParams[_output].CameraWidth = CameraParams[_output].CameraWidth;
+                    OutputParams[_output].CameraHeight = CameraParams[_output].CameraHeight;
+
+                    CvInvoke.Canny(CameraParams[_output].CameraMat, show, 0, 0);
+
+                    OutputParams[_output].CameraMat = show.Clone();
+                    OutputParams[_output].CameraImage = await CameraParams[0].Camera?.TaskConvert(show);
+
+                } 
+
+            }
+
+            // else if (CameraParams[0].CameraMat is not null && CameraParams[1].CameraMat is not null)
+            // {
+            //     OutputParams[_output].CameraWidth = CameraParams[0].CameraWidth;
+            //     OutputParams[_output].CameraHeight = CameraParams[0].CameraHeight;
+
+            //     int disp = (Disparities % 32) * 32;
+            //     int block = BlockSize;
+            //     if (block % 2 == 0)
+            //     {
+            //         block -= 1;
+            //     }
+
+            //     Mat OutputMat = new Mat();
+
+            //     StereoBM stereo = new StereoBM(disp, block);
+                
+            //     stereo.Compute(CameraParams[0].CameraMat, CameraParams[1].CameraMat, OutputMat);
+
+
+            //     OutputMat.ConvertTo(show, DepthType.Cv8U);
+            // }
+
+            // else {
+            //     return;
+            // }
+
+                
+                
+
+                
+
+
+                
+
+        }
+
+        public static void UpdateOutput(int _output)
+        {
+            if (OutputParams[_output].TrigConfigure)
+            {
+                OutputParams[_output].TrigConfigure = false;
+
+                
+                         
+            }
+
+            else if (OutputParams[_output].TrigReport)
+            {
+                OutputParams[_output].TrigReport = false;
+
+                
+            }
+
+            else if (OutputParams[_output].TrigSettings)
+            {
+                OutputParams[_output].TrigSettings = false;
+
+               
+            }
+
+            else if (OutputParams[_output].TrigSave)
+            {
+                OutputParams[_output].TrigSave = false;
+
+                string now = DateTime.Now.ToString("dddd, dd MMMM yyyy HH_mm_ss");
+
+                string filename = string.Format("images/Output {0}  {1}.jpg",_output.ToString(), now);
+
+                CvInvoke.Imwrite(filename, OutputParams[_output].CameraMat);
+            }
+
+            Generate(_output);
+        }
+
+        public static async void Update()
         {
             for (int i = 0; i < TotalCameras; i++)
             {
                 UpdateCamera(i);
             }
+
+            for (int i = 0; i < TotalOutputs; i++)
+            {
+                UpdateOutput(i);
+            }
+
         }
 
 
@@ -280,7 +406,6 @@ namespace shakespear.cameraapp.gui
         //     } 
         // }
 
-
-
+        
     }
 }

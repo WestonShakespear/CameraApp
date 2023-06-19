@@ -21,15 +21,66 @@ namespace shakespear.cameraapp.gui
         {
             ImGui.Begin("Control");
 
+            if(ImGui.Button("Trigger All Cameras"))
+            {
+                for (int camera = 0; camera < UserLogic.TotalCameras; camera++)
+                {
+                    UserLogic.CameraParams[camera].TrigTrigger = true;
+                }
+            }
+            if(ImGui.Button("Save All Cameras"))
+            {
+                for (int camera = 0; camera < UserLogic.TotalCameras; camera++)
+                {
+                    UserLogic.CameraParams[camera].TrigSave = true;
+                }
+            }
+
             for (int camera = 0; camera < UserLogic.TotalCameras; camera++)
             {
-                ImGui.Dummy(new System.Numerics.Vector2(0f, UserLogic.spacing * 30));
+                ImGui.Dummy(new System.Numerics.Vector2(0f, UserLogic.spacing * 10));
                 if(ImGui.Button("Camera " + (camera+1) + " Trigger"))
                 {
                     UserLogic.CameraParams[camera].TrigTrigger = true;
                 }
+                if(ImGui.Button("Camera " + (camera+1) + " Save"))
+                {
+                    UserLogic.CameraParams[camera].TrigSave = true;
+                }
                 // CreateFilter(camera);
             }
+            ImGui.Dummy(new System.Numerics.Vector2(0f, UserLogic.spacing * 30));
+
+            if(ImGui.Button("Trigger All Outputs"))
+            {
+                for (int camera = 0; camera < UserLogic.TotalCameras; camera++)
+                {
+                    UserLogic.OutputParams[camera].TrigTrigger = true;
+                }
+            }
+            if(ImGui.Button("Save All Outputs"))
+            {
+                for (int camera = 0; camera < UserLogic.TotalCameras; camera++)
+                {
+                    UserLogic.OutputParams[camera].TrigSave = true;
+                }
+            }
+
+            for (int output = 0; output < UserLogic.TotalOutputs; output++)
+            {
+                ImGui.Dummy(new System.Numerics.Vector2(0f, UserLogic.spacing * 10));
+                if(ImGui.Button("Output " + (output+1) + " Trigger"))
+                {
+                    UserLogic.OutputParams[output].TrigTrigger = true;
+                }
+                if(ImGui.Button("Output " + (output+1) + " Save"))
+                {
+                    UserLogic.OutputParams[output].TrigSave = true;
+                }
+                // CreateFilter(camera);
+            }
+
+
 
             ImGui.Dummy(new System.Numerics.Vector2(0f, UserLogic.spacing * 10));
             
@@ -362,68 +413,162 @@ namespace shakespear.cameraapp.gui
         // }
 
 
+        static System.Numerics.Vector4 base03 = new System.Numerics.Vector4(0f, 43f, 54f, 255f);
+        static System.Numerics.Vector4 base02 = new System.Numerics.Vector4(7f, 54f, 66f, 255f);
+        static System.Numerics.Vector4 base01 = new System.Numerics.Vector4(88f, 110f, 117f, 255f);
+        static System.Numerics.Vector4 base00 = new System.Numerics.Vector4(101f, 123f, 131f, 255f);
+
+        static System.Numerics.Vector4 base0 = new System.Numerics.Vector4(131f, 148f, 150f, 255f);
+        static System.Numerics.Vector4 base1 = new System.Numerics.Vector4(147f, 161f, 161f, 255f);
+        static System.Numerics.Vector4 base2 = new System.Numerics.Vector4(238f, 232f, 213f, 255f);
+        static System.Numerics.Vector4 base3 = new System.Numerics.Vector4(253f, 246f, 227f, 255f);
 
 
+        static System.Numerics.Vector4 cyan = new System.Numerics.Vector4(42f, 161f, 152f, 255f);
+        static System.Numerics.Vector4 cyanH = new System.Numerics.Vector4(42f, 161f, 152f, 100f);
+        static System.Numerics.Vector4 cyanA = new System.Numerics.Vector4(42f, 161f, 152f, 50f);
+
+        static System.Numerics.Vector4 magenta = new System.Numerics.Vector4(211f, 54f, 130f, 255);
+        static System.Numerics.Vector4 violet = new System.Numerics.Vector4(108f, 113f, 196f, 255f);
+
+
+        static System.Numerics.Vector4 back0 = base02;
+        static System.Numerics.Vector4 back1 = base03;
+
+        static System.Numerics.Vector4 fore0 = base2;
+        static System.Numerics.Vector4 fore1 = base3;
+        
         public static void LoadTheme()
         {
             // Styling
-            ImGui.GetStyle().FrameRounding = 6;
+            ImGui.GetStyle().FrameRounding = 0;
             ImGui.GetStyle().FrameBorderSize = 1;
-            ImGui.GetStyle().TabRounding = 2;
-            ImGui.GetStyle().FramePadding = new System.Numerics.Vector2(4);
-            ImGui.GetStyle().ItemSpacing = new System.Numerics.Vector2(8, 2);
+            ImGui.GetStyle().TabRounding = 0;
+            ImGui.GetStyle().FramePadding = new System.Numerics.Vector2(8);
+            ImGui.GetStyle().ItemSpacing = new System.Numerics.Vector2(16, 2);
             ImGui.GetStyle().ItemInnerSpacing = new System.Numerics.Vector2(1, 4);
-            ImGui.GetStyle().WindowMenuButtonPosition = ImGuiDir.None;
-            ImGui.GetIO().FontGlobalScale = UserLogic.fontSize;
+            //ImGui.GetStyle().WindowMenuButtonPosition = ImGuiDir.None;
+            //ImGui.GetIO().FontGlobalScale = UserLogic.fontSize;
 
-            ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(new System.Numerics.Vector3(0.9f), 1));
+            ImGui.PushStyleColor(ImGuiCol.Text, fore0 / 255);
 
             // Background color
-            ImGui.PushStyleColor(ImGuiCol.WindowBg, new System.Numerics.Vector4(22f, 22f, 22f, 255f) / 255);
-            ImGui.PushStyleColor(ImGuiCol.FrameBg, new System.Numerics.Vector4(20f, 20f, 20f, 255f) / 255);
-            ImGui.PushStyleColor(ImGuiCol.FrameBgHovered, new System.Numerics.Vector4(60f, 60f, 60f, 255f) / 255);
-            ImGui.PushStyleColor(ImGuiCol.FrameBgActive, new System.Numerics.Vector4(80f, 80f, 80f, 255f) / 255);
+            ImGui.PushStyleColor(ImGuiCol.WindowBg, back1 / 255);
+            ImGui.PushStyleColor(ImGuiCol.FrameBg, back1 / 255);
+            ImGui.PushStyleColor(ImGuiCol.FrameBgHovered, back1 / 255);
+            ImGui.PushStyleColor(ImGuiCol.FrameBgActive, back1 / 255);
+
+            ImGui.PushStyleColor(ImGuiCol.MenuBarBg, back0 / 255);
+
+
+            ImGui.PushStyleColor(ImGuiCol.Border, base01 / 255);
 
             // Popup BG
-            ImGui.PushStyleColor(ImGuiCol.ModalWindowDimBg, new System.Numerics.Vector4(30f, 30f, 30f, 150f) / 255);
-            ImGui.PushStyleColor(ImGuiCol.TextDisabled, new System.Numerics.Vector4(150f, 150f, 150f, 255f) / 255);
+            //ImGui.PushStyleColor(ImGuiCol.ModalWindowDimBg, base3 / 255);
+            //ImGui.PushStyleColor(ImGuiCol.TextDisabled, new System.Numerics.Vector4(150f, 150f, 150f, 255f) / 255);
 
             // Titles
-            ImGui.PushStyleColor(ImGuiCol.TitleBgActive, new System.Numerics.Vector4(20f, 20f, 20f, 255f) / 255);
-            ImGui.PushStyleColor(ImGuiCol.TitleBg, new System.Numerics.Vector4(20f, 20f, 20f, 255f) / 255);
-            ImGui.PushStyleColor(ImGuiCol.TitleBgCollapsed, new System.Numerics.Vector4(15f, 15f, 15f, 255f) / 255);
+            ImGui.PushStyleColor(ImGuiCol.TitleBgActive, base03 / 255);
+            ImGui.PushStyleColor(ImGuiCol.TitleBg, base03 / 255);
+            ImGui.PushStyleColor(ImGuiCol.TitleBgCollapsed, base03 / 255);
+            
 
             // Tabs
-            ImGui.PushStyleColor(ImGuiCol.Tab, new System.Numerics.Vector4(20f, 20f, 20f, 255f) / 255);
-            ImGui.PushStyleColor(ImGuiCol.TabActive, new System.Numerics.Vector4(35f, 35f, 35f, 255f) / 255);
-            ImGui.PushStyleColor(ImGuiCol.TabUnfocused, new System.Numerics.Vector4(16f, 16f, 16f, 255f) / 255);
-            ImGui.PushStyleColor(ImGuiCol.TabUnfocusedActive, new System.Numerics.Vector4(35f, 35f, 35f, 255f) / 255);
-            ImGui.PushStyleColor(ImGuiCol.TabHovered, new System.Numerics.Vector4(80f, 80f, 80f, 255f) / 255);
+            ImGui.PushStyleColor(ImGuiCol.Tab, violet / 255);
+            ImGui.PushStyleColor(ImGuiCol.TabActive, violet / 255);
+            ImGui.PushStyleColor(ImGuiCol.TabUnfocused, violet / 255);
+            ImGui.PushStyleColor(ImGuiCol.TabUnfocusedActive, violet / 255);
+            ImGui.PushStyleColor(ImGuiCol.TabHovered, violet / 255);
             
             // Header
-            ImGui.PushStyleColor(ImGuiCol.Header, new System.Numerics.Vector4(0f, 153f, 76f, 255f) / 255);
-            ImGui.PushStyleColor(ImGuiCol.HeaderHovered, new System.Numerics.Vector4(0f, 153f, 76f, 180f) / 255);
-            ImGui.PushStyleColor(ImGuiCol.HeaderActive, new System.Numerics.Vector4(0f, 153f, 76f, 255f) / 255);
+            ImGui.PushStyleColor(ImGuiCol.Header, new System.Numerics.Vector4(108f, 113f, 196f, 255f) / 255);
+            ImGui.PushStyleColor(ImGuiCol.HeaderHovered, new System.Numerics.Vector4(108f, 113f, 196f, 180f) / 255);
+            ImGui.PushStyleColor(ImGuiCol.HeaderActive, new System.Numerics.Vector4(108f, 113f, 196f, 255f) / 255);
 
             // Rezising bar
-            ImGui.PushStyleColor(ImGuiCol.Separator, new System.Numerics.Vector4(40f, 40f, 40f, 255) / 255);
-            ImGui.PushStyleColor(ImGuiCol.SeparatorHovered, new System.Numerics.Vector4(60f, 60f, 60f, 255) / 255);
-            ImGui.PushStyleColor(ImGuiCol.SeparatorActive, new System.Numerics.Vector4(80f, 80f, 80f, 255) / 255);
+            ImGui.PushStyleColor(ImGuiCol.Separator, base01 / 255);
+            ImGui.PushStyleColor(ImGuiCol.SeparatorHovered,base01 / 255);
+            ImGui.PushStyleColor(ImGuiCol.SeparatorActive, base01 / 255);
 
             // Buttons
-            ImGui.PushStyleColor(ImGuiCol.Button, new System.Numerics.Vector4(255, 41, 55, 200) / 255);
-            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new System.Numerics.Vector4(255, 41, 55, 150) / 255);
-            ImGui.PushStyleColor(ImGuiCol.ButtonActive, new System.Numerics.Vector4(255, 41, 55, 100) / 255);
+            ImGui.PushStyleColor(ImGuiCol.Button, cyanH / 255);
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, cyan / 255);
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, cyanA / 255);
 
+            ImGui.PushStyleColor(ImGuiCol.CheckMark, cyanH / 255);
+
+
+            
             // Docking and rezise
-            ImGui.PushStyleColor(ImGuiCol.DockingPreview, new System.Numerics.Vector4(0f, 153f, 76f, 220) / 255);
-            ImGui.PushStyleColor(ImGuiCol.ResizeGrip, new System.Numerics.Vector4(217, 35, 35, 255) / 255);
-            ImGui.PushStyleColor(ImGuiCol.ResizeGripHovered, new System.Numerics.Vector4(217, 35, 35, 200) / 255);
-            ImGui.PushStyleColor(ImGuiCol.ResizeGripActive, new System.Numerics.Vector4(217, 35, 35, 150) / 255);
+            ImGui.PushStyleColor(ImGuiCol.DockingPreview, magenta / 255);
+            ImGui.PushStyleColor(ImGuiCol.ResizeGrip, magenta / 255);
+            ImGui.PushStyleColor(ImGuiCol.ResizeGripHovered, magenta / 255);
+            ImGui.PushStyleColor(ImGuiCol.ResizeGripActive, magenta / 255);
 
             // Sliders, buttons, etc
-            ImGui.PushStyleColor(ImGuiCol.SliderGrab, new System.Numerics.Vector4(120f, 120f, 120f, 255f) / 255);
-            ImGui.PushStyleColor(ImGuiCol.SliderGrabActive, new System.Numerics.Vector4(180f, 180f, 180f, 255f) / 255);
+            ImGui.PushStyleColor(ImGuiCol.SliderGrab, cyanH / 255);
+            ImGui.PushStyleColor(ImGuiCol.SliderGrabActive, cyan / 255);
         }
+        // public static void LoadTheme()
+        // {
+        //     // Styling
+        //     ImGui.GetStyle().FrameRounding = 6;
+        //     ImGui.GetStyle().FrameBorderSize = 1;
+        //     ImGui.GetStyle().TabRounding = 2;
+        //     ImGui.GetStyle().FramePadding = new System.Numerics.Vector2(4);
+        //     ImGui.GetStyle().ItemSpacing = new System.Numerics.Vector2(8, 2);
+        //     ImGui.GetStyle().ItemInnerSpacing = new System.Numerics.Vector2(1, 4);
+        //     ImGui.GetStyle().WindowMenuButtonPosition = ImGuiDir.None;
+        //     ImGui.GetIO().FontGlobalScale = UserLogic.fontSize;
+
+        //     ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(new System.Numerics.Vector3(0.9f), 1));
+
+        //     // Background color
+        //     ImGui.PushStyleColor(ImGuiCol.WindowBg, new System.Numerics.Vector4(22f, 22f, 22f, 255f) / 255);
+        //     ImGui.PushStyleColor(ImGuiCol.FrameBg, new System.Numerics.Vector4(20f, 20f, 20f, 255f) / 255);
+        //     ImGui.PushStyleColor(ImGuiCol.FrameBgHovered, new System.Numerics.Vector4(60f, 60f, 60f, 255f) / 255);
+        //     ImGui.PushStyleColor(ImGuiCol.FrameBgActive, new System.Numerics.Vector4(80f, 80f, 80f, 255f) / 255);
+
+        //     // Popup BG
+        //     ImGui.PushStyleColor(ImGuiCol.ModalWindowDimBg, new System.Numerics.Vector4(30f, 30f, 30f, 150f) / 255);
+        //     ImGui.PushStyleColor(ImGuiCol.TextDisabled, new System.Numerics.Vector4(150f, 150f, 150f, 255f) / 255);
+
+        //     // Titles
+        //     ImGui.PushStyleColor(ImGuiCol.TitleBgActive, new System.Numerics.Vector4(20f, 20f, 20f, 255f) / 255);
+        //     ImGui.PushStyleColor(ImGuiCol.TitleBg, new System.Numerics.Vector4(20f, 20f, 20f, 255f) / 255);
+        //     ImGui.PushStyleColor(ImGuiCol.TitleBgCollapsed, new System.Numerics.Vector4(15f, 15f, 15f, 255f) / 255);
+
+        //     // Tabs
+        //     ImGui.PushStyleColor(ImGuiCol.Tab, new System.Numerics.Vector4(20f, 20f, 20f, 255f) / 255);
+        //     ImGui.PushStyleColor(ImGuiCol.TabActive, new System.Numerics.Vector4(35f, 35f, 35f, 255f) / 255);
+        //     ImGui.PushStyleColor(ImGuiCol.TabUnfocused, new System.Numerics.Vector4(16f, 16f, 16f, 255f) / 255);
+        //     ImGui.PushStyleColor(ImGuiCol.TabUnfocusedActive, new System.Numerics.Vector4(35f, 35f, 35f, 255f) / 255);
+        //     ImGui.PushStyleColor(ImGuiCol.TabHovered, new System.Numerics.Vector4(80f, 80f, 80f, 255f) / 255);
+            
+        //     // Header
+        //     ImGui.PushStyleColor(ImGuiCol.Header, new System.Numerics.Vector4(0f, 153f, 76f, 255f) / 255);
+        //     ImGui.PushStyleColor(ImGuiCol.HeaderHovered, new System.Numerics.Vector4(0f, 153f, 76f, 180f) / 255);
+        //     ImGui.PushStyleColor(ImGuiCol.HeaderActive, new System.Numerics.Vector4(0f, 153f, 76f, 255f) / 255);
+
+        //     // Rezising bar
+        //     ImGui.PushStyleColor(ImGuiCol.Separator, new System.Numerics.Vector4(40f, 40f, 40f, 255) / 255);
+        //     ImGui.PushStyleColor(ImGuiCol.SeparatorHovered, new System.Numerics.Vector4(60f, 60f, 60f, 255) / 255);
+        //     ImGui.PushStyleColor(ImGuiCol.SeparatorActive, new System.Numerics.Vector4(80f, 80f, 80f, 255) / 255);
+
+        //     // Buttons
+        //     ImGui.PushStyleColor(ImGuiCol.Button, new System.Numerics.Vector4(255, 41, 55, 200) / 255);
+        //     ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new System.Numerics.Vector4(255, 41, 55, 150) / 255);
+        //     ImGui.PushStyleColor(ImGuiCol.ButtonActive, new System.Numerics.Vector4(255, 41, 55, 100) / 255);
+
+        //     // Docking and rezise
+        //     ImGui.PushStyleColor(ImGuiCol.DockingPreview, new System.Numerics.Vector4(0f, 153f, 76f, 220) / 255);
+        //     ImGui.PushStyleColor(ImGuiCol.ResizeGrip, new System.Numerics.Vector4(217, 35, 35, 255) / 255);
+        //     ImGui.PushStyleColor(ImGuiCol.ResizeGripHovered, new System.Numerics.Vector4(217, 35, 35, 200) / 255);
+        //     ImGui.PushStyleColor(ImGuiCol.ResizeGripActive, new System.Numerics.Vector4(217, 35, 35, 150) / 255);
+
+        //     // Sliders, buttons, etc
+        //     ImGui.PushStyleColor(ImGuiCol.SliderGrab, new System.Numerics.Vector4(120f, 120f, 120f, 255f) / 255);
+        //     ImGui.PushStyleColor(ImGuiCol.SliderGrabActive, new System.Numerics.Vector4(180f, 180f, 180f, 255f) / 255);
+        // }
     }
 }
